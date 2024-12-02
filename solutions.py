@@ -1,9 +1,8 @@
 from collections import Counter
 import inspect
-from operator import lt, gt
 import sys
 
-from utils import read_input
+from utils import read_input, day_2_helper
 
 
 def day_1(part='A') -> int:
@@ -17,17 +16,7 @@ def day_1(part='A') -> int:
 
 
 def day_2(part='A') -> int:
-    data = [[int(i) for i in report.split()] for report in read_input(2)]
-    valid_count = 0
-    for report in data:
-        if len(report) == 1:
-            valid_count += 1
-            continue
-        valid, op_ = True, gt if report[1] > report[0] else lt
-        for i, v in enumerate(report[1:]):
-            valid = valid and op_(v, report[i]) and abs(report[i]-v) <= 3
-        valid_count += valid
-    return valid_count
+    return day_2_helper(part)
 
 
 if __name__ == '__main__':

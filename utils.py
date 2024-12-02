@@ -14,3 +14,23 @@ def read_input(day: int | str, delim='\n', year=None) -> List[str]:
                             cookies={'session': session_id})
     if response.status_code == HTTPStatus.OK:
         return response.text.split(delim)[:-1]
+
+
+def day_2_helper(part='A') -> int:
+    count = 0
+    for report in read_input(2):
+        report = report.split()
+        if part.upper() == 'A':
+            count += _is_valid_report(report)
+        else:
+            for i in range(len(report)):
+                if _is_valid_report(report[:i]+report[i+1:]):
+                    count += 1
+                    break
+    return count
+
+
+def _is_valid_report(report: List[str]) -> int:
+    diffs = {int(v)-int(report[i]) for i, v in enumerate(report[1:])}
+    return diffs <= {1, 2, 3} or diffs <= {-1, -2, -3}
+
