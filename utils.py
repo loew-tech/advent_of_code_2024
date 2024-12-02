@@ -13,4 +13,4 @@ def read_input(day: int | str, delim='\n', year=None) -> List[str]:
     response = requests.get(f'{ADVENT_URI}{year}/day/{day}/input',
                             cookies={'session': session_id})
     if response.status_code == HTTPStatus.OK:
-        return response.text.split(delim)
+        return response.text.split(delim)[:-1]
