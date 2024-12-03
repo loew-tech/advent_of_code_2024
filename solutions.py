@@ -22,6 +22,8 @@ def day_2(part='A') -> int:
 
 def day_3(part='A') -> int:
     data = read_input(3, delim=None)
+    if not part.upper() == 'A':
+        return _day_3b(data)
     pattern = r'mul\(\d+,\d+\)'
     matches = re.findall(pattern, data)
     sum_ = 0
@@ -29,6 +31,21 @@ def day_3(part='A') -> int:
         d1, d2 = re.findall(r'\d+', m)
         sum_ += int(d1) * int(d2)
     return sum_
+
+
+def _day_3b(data: str) -> int:
+    entries, active = data.split('do'), True
+    ret = 0
+    for entry in entries:
+        active = not entry.startswith("n't")
+        if not active:
+            continue
+        pattern = r'mul\(\d+,\d+\)'
+        matches = re.findall(pattern, entry)
+        for m in matches:
+            d1, d2 = re.findall(r'\d+', m)
+            ret += int(d1) * int(d2)
+    return ret
 
 
 if __name__ == '__main__':
