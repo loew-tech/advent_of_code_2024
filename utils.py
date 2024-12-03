@@ -13,13 +13,12 @@ def read_input(day: int | str, delim='\n', year=None) -> List[str]:
     response = requests.get(f'{ADVENT_URI}{year}/day/{day}/input',
                             cookies={'session': session_id})
     if response.status_code == HTTPStatus.OK:
-        return response.text.split(delim)[:-1]
+        return response.text.split(delim)[:-1] if delim else response.text
 
 
 def day_2_helper(part='A') -> int:
     count = 0
-    for report in read_input(2):
-        report = report.split()
+    for report in (r.split() for r in read_input(2)):
         if part.upper() == 'A':
             count += _is_valid_report(report)
         else:
