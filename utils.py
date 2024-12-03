@@ -1,5 +1,6 @@
 from datetime import datetime
 from http import HTTPStatus
+import re
 import requests
 from typing import List
 
@@ -33,3 +34,12 @@ def _is_valid_report(report: List[str]) -> int:
     diffs = {int(v)-int(report[i]) for i, v in enumerate(report[1:])}
     return diffs <= {1, 2, 3} or diffs <= {-1, -2, -3}
 
+
+def day_3_sum_mult(data: str) -> int:
+    pattern = r'mul\(\d+,\d+\)'
+    matches = re.findall(pattern, data)
+    sum_ = 0
+    for m in matches:
+        d1, d2 = re.findall(r'\d+', m)
+        sum_ += int(d1) * int(d2)
+    return sum_
