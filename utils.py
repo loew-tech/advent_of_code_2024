@@ -55,21 +55,33 @@ def day_3_sum_mult(data: str) -> int:
     return sum_
 
 
-def day_4_word_search(data: List[str]) -> int:
+def day_4_word_search(data: List[str], part: str) -> int:
     count, xmas = 0, 'XMAS'
     is_inbounds = get_inbounds(data)
 
-    def is_xmas(y_, x_, yi_, xi_):
+    def is_xmas(y_, x_, yi_, xi_: int) -> bool:
         i = 0
-        while is_inbounds(y_, x_,) and i < len(xmas) and\
+        while is_inbounds(y_, x_, ) and i < len(xmas) and \
                 data[y_][x_] == xmas[i]:
             y_ += yi_
             x_ += xi_
             i += 1
         return i == len(xmas)
 
+    def is_mas(y_, x_: int) -> bool:
+        if not data[y_][x_] == 'A':
+            return False
+        if not (is_inbounds(y_ - 1, x_ - 1) and is_inbounds(y + 1, x_ + 1) and
+                {data[y_ - 1][x_ - 1], data[y_ + 1][x_ + 1]} == {'S', 'M'}):
+            return False
+        return is_inbounds(y_ - 1, x_ + 1) and is_inbounds(y_ + 1, x_ - 1) and\
+               {data[y_ - 1][x_ + 1], data[y_ + 1][x_ - 1]} == {'S', 'M'}
+
     for y, row in enumerate(data):
         for x in range(len(row)):
-            for yi, xi in DIRECTIONS:
-                count += is_xmas(y, x, yi, xi)
+            if part.upper() == 'A':
+                for yi, xi in DIRECTIONS:
+                    count += is_xmas(y, x, yi, xi)
+            else:
+                count += is_mas(y, x)
     return count

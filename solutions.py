@@ -29,8 +29,7 @@ def day_3(part='A') -> int:
 
 
 def day_4(part='A') -> int:
-    data = read_input(4)
-    return day_4_word_search(data) if part.upper() == 'A' else NotImplemented
+    return day_4_word_search(read_input(4), part)
 
 
 if __name__ == '__main__':
