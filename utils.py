@@ -2,7 +2,9 @@ from datetime import datetime
 from http import HTTPStatus
 import re
 import requests
-from typing import List
+from typing import List, Callable
+
+from constants import DIRECTIONS
 
 ADVENT_URI = 'https://adventofcode.com/'
 
@@ -17,6 +19,14 @@ def read_input(day: int | str, delim='\n', year=None) -> List[str]:
         return response.text.split(delim)[:-1] if delim else response.text
 
 
+def get_inbounds(grid: List[List[any] | str]) -> Callable[[int, int], bool]:
+    return lambda y, x: inbounds(y, x, grid)
+
+
+def inbounds(y, x: int, grid: List[List[any] | str]) -> bool:
+    return 0 <= y < len(grid) and 0 <= x < len(grid[y])
+
+
 def day_2_helper(part='A') -> int:
     count = 0
     for report in (r.split() for r in read_input(2)):
@@ -24,14 +34,14 @@ def day_2_helper(part='A') -> int:
             count += _is_valid_report(report)
         else:
             for i in range(len(report)):
-                if _is_valid_report(report[:i]+report[i+1:]):
+                if _is_valid_report(report[:i] + report[i + 1:]):
                     count += 1
                     break
     return count
 
 
 def _is_valid_report(report: List[str]) -> int:
-    diffs = {int(v)-int(report[i]) for i, v in enumerate(report[1:])}
+    diffs = {int(v) - int(report[i]) for i, v in enumerate(report[1:])}
     return diffs <= {1, 2, 3} or diffs <= {-1, -2, -3}
 
 
@@ -43,3 +53,23 @@ def day_3_sum_mult(data: str) -> int:
         d1, d2 = re.findall(r'\d+', m)
         sum_ += int(d1) * int(d2)
     return sum_
+
+
+def day_4_word_search(data: List[str]) -> int:
+    count, xmas = 0, 'XMAS'
+    is_inbounds = get_inbounds(data)
+
+    def is_xmas(y_, x_, yi_, xi_):
+        i = 0
+        while is_inbounds(y_, x_,) and i < len(xmas) and\
+                data[y_][x_] == xmas[i]:
+            y_ += yi_
+            x_ += xi_
+            i += 1
+        return i == len(xmas)
+
+    for y, row in enumerate(data):
+        for x in range(len(row)):
+            for yi, xi in DIRECTIONS:
+                count += is_xmas(y, x, yi, xi)
+    return count

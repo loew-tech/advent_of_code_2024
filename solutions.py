@@ -3,7 +3,7 @@ import inspect
 import re
 import sys
 
-from utils import read_input, day_2_helper, day_3_sum_mult
+from utils import read_input, day_2_helper, day_3_sum_mult, day_4_word_search
 
 
 def day_1(part='A') -> int:
@@ -26,6 +26,11 @@ def day_3(part='A') -> int:
         return day_3_sum_mult(data)
     return sum(day_3_sum_mult(entry) for entry in data.split('do')
                if not entry.startswith("n't"))
+
+
+def day_4(part='A') -> int:
+    data = read_input(4)
+    return day_4_word_search(data) if part.upper() == 'A' else NotImplemented
 
 
 if __name__ == '__main__':
