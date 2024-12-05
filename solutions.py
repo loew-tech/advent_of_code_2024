@@ -38,11 +38,10 @@ def day_5(part='A') -> int:
     data = [[int(i) for i in row.split('|')] for row in data.split('\n')]
     updates = [[int(i) for i in row.split(',')] for
                row in updates.split('\n')[:-1]]
-    ancestors, predecessors = defaultdict(set), defaultdict(set)
+    predecessors = defaultdict(set)
     for x, y in data:
-        ancestors[x].add(y)
         predecessors[y].add(x)
-    return day_5_sum_mid_page(ancestors, predecessors, updates, part)
+    return day_5_sum_mid_page(predecessors, updates, part)
 
 
 if __name__ == '__main__':

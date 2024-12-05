@@ -85,12 +85,12 @@ def day_4_word_search(data: List[str], part: str) -> int:
     return count
 
 
-def day_5_sum_mid_page(ancestors, predecessors: defaultdict[Set[int]],
+def day_5_sum_mid_page(predecessors: defaultdict[Set[int]],
                        updates: List[List[int]], part='A') -> int:
     def is_ordered(update_: List[int]) -> bool:
         observed = set()
         for page in update_:
-            if observed & ancestors[page]:
+            if observed - predecessors[page]:
                 return False
             observed.add(page)
         return True
@@ -114,6 +114,5 @@ def day_5_sum_mid_page(ancestors, predecessors: defaultdict[Set[int]],
             continue
         if part.upper() == 'A':
             continue
-        fixed = fix_update(update)
-        sum_ += fixed[len(fixed)//2]
+        sum_ += fix_update(update)[len(update)//2]
     return sum_
