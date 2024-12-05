@@ -106,3 +106,40 @@ def day_5_sum_mid_page(data: List[str]) -> int:
     return sum_
 
 
+def day_5b_helper(data: List[str]) -> int:
+
+    def is_valid(update_: List[int]) -> bool:
+        observed = set()
+        for page in update_:
+            if observed & ancestors[page]:
+                return False
+            observed.add(page)
+        return True
+
+    data, updates = data
+    data = [[int(i) for i in row.split('|')] for row in data.split('\n')]
+    updates = [[int(i) for i in row.split(',')] for
+               row in updates.split('\n')[:-1]]
+    ancestors = defaultdict(set)
+    predecessors = defaultdict(set)
+    for x, y in data:
+        ancestors[x].add(y)
+        predecessors[y].add(x)
+
+    sum_ = 0
+    for update in updates:
+        if is_valid(update):
+            continue
+        vals = set(update)
+        reuse = set()
+        fixed = []
+        while vals:
+            val = vals.pop()
+            if vals & predecessors[val]:
+                reuse.add(val)
+            else:
+                fixed.append(val)
+                vals.update(reuse)
+                reuse = set()
+        sum_ += fixed[len(fixed)//2]
+    return sum_

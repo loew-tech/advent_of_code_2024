@@ -1,10 +1,9 @@
 from collections import Counter
 import inspect
-import re
 import sys
 
 from utils import (read_input, day_2_helper, day_3_sum_mult, day_4_word_search,
-day_5_sum_mid_page)
+                   day_5_sum_mid_page, day_5b_helper)
 
 
 def day_1(part='A') -> int:
@@ -12,9 +11,9 @@ def day_1(part='A') -> int:
     first = sorted(int(i.split()[0]) for i in data)
     second = sorted(int(i.split()[1]) for i in data)
     if part.upper() == 'A':
-        return sum(abs(v-second[i]) for i, v in enumerate(first))
+        return sum(abs(v - second[i]) for i, v in enumerate(first))
     counter = Counter(second)
-    return sum(v*counter.get(v, 0) for v in first)
+    return sum(v * counter.get(v, 0) for v in first)
 
 
 def day_2(part='A') -> int:
@@ -37,7 +36,7 @@ def day_5(part='A') -> int:
     data = read_input(5, delim=None).split('\n\n')
     if part.upper() == 'A':
         return day_5_sum_mid_page(data)
-    return NotImplemented
+    return day_5b_helper(data)
 
 
 if __name__ == '__main__':
