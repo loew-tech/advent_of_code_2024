@@ -3,7 +3,8 @@ import inspect
 import re
 import sys
 
-from utils import read_input, day_2_helper, day_3_sum_mult, day_4_word_search
+from utils import (read_input, day_2_helper, day_3_sum_mult, day_4_word_search,
+day_5_sum_mid_page)
 
 
 def day_1(part='A') -> int:
@@ -30,6 +31,13 @@ def day_3(part='A') -> int:
 
 def day_4(part='A') -> int:
     return day_4_word_search(read_input(4), part)
+
+
+def day_5(part='A') -> int:
+    data = read_input(5, delim=None).split('\n\n')
+    if part.upper() == 'A':
+        return day_5_sum_mid_page(data)
+    return NotImplemented
 
 
 if __name__ == '__main__':

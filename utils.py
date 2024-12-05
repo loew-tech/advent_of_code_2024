@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 from http import HTTPStatus
 import re
@@ -79,9 +80,29 @@ def day_4_word_search(data: List[str], part: str) -> int:
 
     for y, row in enumerate(data):
         for x in range(len(row)):
-            if part.upper() == 'A':
-                for yi, xi in DIRECTIONS:
-                    count += is_xmas(y, x, yi, xi)
-            else:
-                count += is_mas(y, x)
+            count += sum(is_xmas(y, x, yi, xi) for yi, xi in DIRECTIONS) if \
+                part.upper() == 'A' else is_mas(y, x)
     return count
+
+
+def day_5_sum_mid_page(data: List[str]) -> int:
+    data, updates = data
+    data = [[int(i) for i in row.split('|')] for row in data.split('\n')]
+    updates = [[int(i) for i in row.split(',')] for
+               row in updates.split('\n')[:-1]]
+    ancestors = defaultdict(set)
+    for x, y in data:
+        ancestors[x].add(y)
+
+    sum_ = 0
+    for update in updates:
+        observed, valid = set(), True
+        for page in update:
+            if observed & ancestors[page]:
+                valid = False
+                break
+            observed.add(page)
+        sum_ += valid and update[len(update)//2]
+    return sum_
+
+
