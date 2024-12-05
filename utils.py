@@ -3,7 +3,7 @@ from datetime import datetime
 from http import HTTPStatus
 import re
 import requests
-from typing import List, Callable
+from typing import List, Callable, Set
 
 from constants import DIRECTIONS
 
@@ -85,30 +85,9 @@ def day_4_word_search(data: List[str], part: str) -> int:
     return count
 
 
-def day_5_sum_mid_page(data: List[str]) -> int:
-    data, updates = data
-    data = [[int(i) for i in row.split('|')] for row in data.split('\n')]
-    updates = [[int(i) for i in row.split(',')] for
-               row in updates.split('\n')[:-1]]
-    ancestors = defaultdict(set)
-    for x, y in data:
-        ancestors[x].add(y)
-
-    sum_ = 0
-    for update in updates:
-        observed, valid = set(), True
-        for page in update:
-            if observed & ancestors[page]:
-                valid = False
-                break
-            observed.add(page)
-        sum_ += valid and update[len(update)//2]
-    return sum_
-
-
-def day_5b_helper(data: List[str]) -> int:
-
-    def is_valid(update_: List[int]) -> bool:
+def day_5_sum_mid_page(ancestors, predecessors: defaultdict[Set[int]],
+                       updates: List[List[int]], part='A') -> int:
+    def is_ordered(update_: List[int]) -> bool:
         observed = set()
         for page in update_:
             if observed & ancestors[page]:
@@ -116,30 +95,25 @@ def day_5b_helper(data: List[str]) -> int:
             observed.add(page)
         return True
 
-    data, updates = data
-    data = [[int(i) for i in row.split('|')] for row in data.split('\n')]
-    updates = [[int(i) for i in row.split(',')] for
-               row in updates.split('\n')[:-1]]
-    ancestors = defaultdict(set)
-    predecessors = defaultdict(set)
-    for x, y in data:
-        ancestors[x].add(y)
-        predecessors[y].add(x)
-
-    sum_ = 0
-    for update in updates:
-        if is_valid(update):
-            continue
-        vals = set(update)
-        reuse = set()
-        fixed = []
+    def fix_update(update_: List[int]) -> List[int]:
+        vals, reuse, fixed_ = set(update_), set(), []
         while vals:
             val = vals.pop()
             if vals & predecessors[val]:
                 reuse.add(val)
             else:
-                fixed.append(val)
+                fixed_.append(val)
                 vals.update(reuse)
                 reuse = set()
+        return fixed_
+
+    sum_ = 0
+    for update in updates:
+        if is_ordered(update):
+            sum_ += (part.upper() == 'A') * update[len(update)//2]
+            continue
+        if part.upper() == 'A':
+            continue
+        fixed = fix_update(update)
         sum_ += fixed[len(fixed)//2]
     return sum_

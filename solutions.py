@@ -1,9 +1,9 @@
-from collections import Counter
+from collections import Counter, defaultdict
 import inspect
 import sys
 
 from utils import (read_input, day_2_helper, day_3_sum_mult, day_4_word_search,
-                   day_5_sum_mid_page, day_5b_helper)
+                   day_5_sum_mid_page)
 
 
 def day_1(part='A') -> int:
@@ -34,9 +34,15 @@ def day_4(part='A') -> int:
 
 def day_5(part='A') -> int:
     data = read_input(5, delim=None).split('\n\n')
-    if part.upper() == 'A':
-        return day_5_sum_mid_page(data)
-    return day_5b_helper(data)
+    data, updates = data
+    data = [[int(i) for i in row.split('|')] for row in data.split('\n')]
+    updates = [[int(i) for i in row.split(',')] for
+               row in updates.split('\n')[:-1]]
+    ancestors, predecessors = defaultdict(set), defaultdict(set)
+    for x, y in data:
+        ancestors[x].add(y)
+        predecessors[y].add(x)
+    return day_5_sum_mid_page(ancestors, predecessors, updates, part)
 
 
 if __name__ == '__main__':
