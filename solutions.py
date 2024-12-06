@@ -2,6 +2,7 @@ from collections import Counter, defaultdict
 import inspect
 import sys
 
+from classes import PatrolGuard
 from utils import (read_input, day_2_helper, day_3_sum_mult, day_4_word_search,
                    day_5_sum_mid_page)
 
@@ -9,8 +10,9 @@ from utils import (read_input, day_2_helper, day_3_sum_mult, day_4_word_search,
 def day_1(part='A') -> int:
     data = read_input(1)
     first = sorted(int(i.split()[0]) for i in data)
-    second = sorted(int(i.split()[1]) for i in data)
+    second = (int(i.split()[1]) for i in data)
     if part.upper() == 'A':
+        second = sorted(second)
         return sum(abs(v - second[i]) for i, v in enumerate(first))
     counter = Counter(second)
     return sum(v * counter.get(v, 0) for v in first)
@@ -44,9 +46,17 @@ def day_5(part='A') -> int:
     return day_5_sum_mid_page(predecessors, updates, part)
 
 
+def day_6(part='A') -> int:
+    data = read_input(6)
+    if part.upper() == 'A':
+        guard = PatrolGuard(data)
+        return guard.patrol()
+    return NotImplemented
+
+
 if __name__ == '__main__':
     args = sys.argv[1:] if sys.argv[1:] else range(1, 26)
-    args = [f'day_{i}' for i in args]
+    args = (f'day_{i}' for i in args)
     members = inspect.getmembers(inspect.getmodule(inspect.currentframe()))
     funcs = {name: member for name, member in members
              if inspect.isfunction(member)}
