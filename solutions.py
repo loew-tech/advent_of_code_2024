@@ -6,6 +6,7 @@ from classes import PatrolGuard
 from utils import (read_input, day_2_helper, day_3_sum_mult, day_4_word_search,
                    day_5_sum_mid_page)
 
+import time
 
 def day_1(part='A') -> int:
     data = read_input(1)
@@ -49,18 +50,17 @@ def day_5(part='A') -> int:
 def day_6(part='A') -> int:
     data = read_input(6)
     guard = PatrolGuard(data)
-    _, len_path = guard.get_does_patrol_loop_and_patrol_size()
+    _, path = guard.get_does_patrol_loop_and_patrol_size()
     if part.upper() == 'A':
-        return len_path
+        return len(path)
     data, count = [list(str_) for str_ in data], 0
-    for y, row in enumerate(data):
-        for x, v in enumerate(row):
-            if not v == '.':
-                continue
-            data[y][x] = '#'
-            loops, _ = PatrolGuard(data).get_does_patrol_loop_and_patrol_size()
-            count += loops
-            data[y][x] = '.'
+    for y, x in path:
+        if data[y][x] == '^':
+            continue
+        data[y][x] = '#'
+        loops, _ = PatrolGuard(data).get_does_patrol_loop_and_patrol_size()
+        count += loops
+        data[y][x] = '.'
     return count
 
 

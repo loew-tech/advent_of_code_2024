@@ -21,7 +21,7 @@ class PatrolGuard:
         while inbounds(self._y, self._x):
             yi, xi = self._incs[self._i]
             if (self._y, self._x, yi, xi) in visited:
-                return True, len(spaces)
+                return True, spaces
             visited.add((self._y, self._x, yi, xi))
             spaces.add((self._y, self._x))
 
@@ -32,4 +32,4 @@ class PatrolGuard:
             else:
                 self._i = (self._i + 1) % len(self._incs)
 
-        return False, len(spaces)
+        return False, spaces
