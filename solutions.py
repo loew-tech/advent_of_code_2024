@@ -4,9 +4,8 @@ import sys
 
 from classes import PatrolGuard
 from utils import (read_input, day_2_helper, day_3_sum_mult, day_4_word_search,
-                   day_5_sum_mid_page, day_7_compute_eqs)
+                   day_5_sum_mid_page, day_7_check_eq)
 
-import time
 
 def day_1(part='A') -> int:
     data = read_input(1)
@@ -65,13 +64,16 @@ def day_6(part='A') -> int:
 
 def day_7(part='A') -> int:
     data = [row.split(':') for row in read_input(7)]
-    ret = 0
+    ret, invalids = 0, []
     for sol, operands in data:
         sol, operands = int(sol), [int(i) for i in operands.split()]
-        ret += day_7_compute_eqs(sol, operands) * sol
-    if part.upper() == 'A':
-        return ret
-    return NotImplemented
+        if day_7_check_eq(sol, operands, part='A'):
+            ret += sol
+        else:
+            invalids.append((sol, operands))
+    return ret if part.upper() == 'A' else \
+        ret + sum(sol for sol, ops in invalids if
+                  day_7_check_eq(sol, ops, part='B'))
 
 
 if __name__ == '__main__':

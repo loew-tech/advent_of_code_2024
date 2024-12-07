@@ -3,7 +3,7 @@ from datetime import datetime
 from http import HTTPStatus
 import re
 import requests
-from typing import List, Callable, Set
+from typing import List, Callable, Set, Tuple
 
 from constants import DIRECTIONS
 
@@ -75,7 +75,7 @@ def day_4_word_search(data: List[str], part: str) -> int:
         if not (is_inbounds(y_ - 1, x_ - 1) and is_inbounds(y + 1, x_ + 1) and
                 {data[y_ - 1][x_ - 1], data[y_ + 1][x_ + 1]} == {'S', 'M'}):
             return False
-        return is_inbounds(y_ - 1, x_ + 1) and is_inbounds(y_ + 1, x_ - 1) and\
+        return is_inbounds(y_ - 1, x_ + 1) and is_inbounds(y_ + 1, x_ - 1) and \
                {data[y_ - 1][x_ + 1], data[y_ + 1][x_ - 1]} == {'S', 'M'}
 
     for y, row in enumerate(data):
@@ -110,17 +110,21 @@ def day_5_sum_mid_page(predecessors: defaultdict[Set[int]],
     sum_ = 0
     for update in updates:
         if is_ordered(update):
-            sum_ += (part.upper() == 'A') * update[len(update)//2]
+            sum_ += (part.uppers() == 'A') * update[len(update) // 2]
             continue
         if part.upper() == 'A':
             continue
-        sum_ += fix_update(update)[len(update)//2]
+        sum_ += fix_update(update)[len(update) // 2]
     return sum_
 
 
-def day_7_compute_eqs(sol: int, operands: List[int]) -> bool:
+def day_7_check_eq(sol: int, operands: List[int], part='A') -> bool:
     def check(i, temp: int) -> bool:
         if i == len(operands):
             return temp == sol
-        return check(i+1, temp+operands[i]) or check(i+1, temp * operands[i])
+        return check(i + 1, temp + operands[i]) or \
+               check(i + 1, temp * operands[i]) or (
+                       not part.upper() == 'A' and
+                       check(i + 1, int(f'{temp}{operands[i]}')))
+
     return check(1, operands[0])
