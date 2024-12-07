@@ -4,7 +4,7 @@ import sys
 
 from classes import PatrolGuard
 from utils import (read_input, day_2_helper, day_3_sum_mult, day_4_word_search,
-                   day_5_sum_mid_page)
+                   day_5_sum_mid_page, day_7_compute_eqs)
 
 import time
 
@@ -49,8 +49,7 @@ def day_5(part='A') -> int:
 
 def day_6(part='A') -> int:
     data = read_input(6)
-    guard = PatrolGuard(data)
-    _, path = guard.get_does_patrol_loop_and_patrol_size()
+    _, path = PatrolGuard(data).get_does_patrol_loop_and_patrol_area()
     if part.upper() == 'A':
         return len(path)
     data, count = [list(str_) for str_ in data], 0
@@ -58,10 +57,21 @@ def day_6(part='A') -> int:
         if data[y][x] == '^':
             continue
         data[y][x] = '#'
-        loops, _ = PatrolGuard(data).get_does_patrol_loop_and_patrol_size()
+        loops, _ = PatrolGuard(data).get_does_patrol_loop_and_patrol_area()
         count += loops
         data[y][x] = '.'
     return count
+
+
+def day_7(part='A') -> int:
+    data = [row.split(':') for row in read_input(7)]
+    ret = 0
+    for sol, operands in data:
+        sol, operands = int(sol), [int(i) for i in operands.split()]
+        ret += day_7_compute_eqs(sol, operands) * sol
+    if part.upper() == 'A':
+        return ret
+    return NotImplemented
 
 
 if __name__ == '__main__':

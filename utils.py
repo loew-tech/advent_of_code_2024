@@ -116,3 +116,11 @@ def day_5_sum_mid_page(predecessors: defaultdict[Set[int]],
             continue
         sum_ += fix_update(update)[len(update)//2]
     return sum_
+
+
+def day_7_compute_eqs(sol: int, operands: List[int]) -> bool:
+    def check(i, temp: int) -> bool:
+        if i == len(operands):
+            return temp == sol
+        return check(i+1, temp+operands[i]) or check(i+1, temp * operands[i])
+    return check(1, operands[0])

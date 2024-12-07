@@ -13,7 +13,7 @@ class PatrolGuard:
         self._incs = [(-1, 0), (0, 1), (1, 0), (0, -1)]
         self._i = 0
 
-    def get_does_patrol_loop_and_patrol_size(self):
+    def get_does_patrol_loop_and_patrol_area(self):
         def inbounds(y, x: int) -> bool:
             return 0 <= y < len(self._grid) and 0 <= x < len(self._grid[y])
 
