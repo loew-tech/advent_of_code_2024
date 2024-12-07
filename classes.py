@@ -17,21 +17,19 @@ class PatrolGuard:
         def inbounds(y, x: int) -> bool:
             return 0 <= y < len(self._grid) and 0 <= x < len(self._grid[y])
 
-        spaces, visited, moved = set(), set(), True
+        spaces, visited = set(), set()
         while inbounds(self._y, self._x):
             yi, xi = self._incs[self._i]
-            if (self._y, self._x, yi, xi) in visited and not moved:
+            if (self._y, self._x, yi, xi) in visited:
                 return True, len(spaces)
             visited.add((self._y, self._x, yi, xi))
             spaces.add((self._y, self._x))
 
             if not inbounds(self._y + yi, self._x + xi) or \
                     not self._grid[self._y + yi][self._x + xi] == '#':
-                moved = True
                 self._y += yi
                 self._x += xi
             else:
-                moved = False
                 self._i = (self._i + 1) % len(self._incs)
 
         return False, len(spaces)
