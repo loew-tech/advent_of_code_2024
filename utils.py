@@ -128,3 +128,26 @@ def day_7_check_eq(sol: int, operands: List[int], part='A') -> bool:
                        check(i + 1, int(f'{temp}{operands[i]}')))
 
     return check(1, operands[0])
+
+
+def day_8_count_antinodes(antennas: defaultdict,
+                          inbounds: Callable[[int, int], bool],
+                          part='A') -> int:
+    antinodes = set()
+    for antennas_ in antennas.values():
+        for y, x in antennas_:
+            for y1, x1 in antennas_:
+                if y == y1 and x == x1:
+                    continue
+
+                dy, dx = y-y1, x-x1
+                antinodes_y, antinodes_x = y1-dy, x1-dx
+                if inbounds(antinodes_y, antinodes_x):
+                    antinodes.add((antinodes_y, antinodes_x))
+
+                y_, x_ = y1, x1
+                while not part.upper() == 'A' and inbounds(y_, x_):
+                    antinodes.add((y_, x_))
+                    y_ -= dy
+                    x_ -= dx
+    return len(antinodes)

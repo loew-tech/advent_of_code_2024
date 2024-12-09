@@ -4,7 +4,8 @@ import sys
 
 from classes import PatrolGuard
 from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
-                   day_4_word_search, day_5_sum_mid_page, day_7_check_eq)
+                   day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
+                   day_8_count_antinodes)
 
 
 def day_1(part='A') -> int:
@@ -76,7 +77,6 @@ def day_7(part='A') -> int:
                   day_7_check_eq(sol, ops, part='B'))
 
 
-# @TODO: 272 is too high
 def day_8(part='A') -> int:
     data = read_input(8)
     inbounds, antennas = get_inbounds(data), defaultdict(list)
@@ -87,25 +87,8 @@ def day_8(part='A') -> int:
                 continue
             antennas[v].append((y, x))
 
-    antenoids = set()
-    for antennas_ in antennas.values():
-        for y, x in antennas_:
-            for y1, x1 in antennas_:
-                if y == y1 and x == x1:
-                    continue
+    return day_8_count_antinodes(antennas, inbounds, part)
 
-                dy, dx = y-y1, x-x1
-                antenoid_y, antenoid_x = y1-dy, x1-dx
-                if inbounds(antenoid_y, antenoid_x):
-                    antenoids.add((antenoid_y, antenoid_x))
-
-                y_, x_ = y1, x1
-                while not part.upper() == 'A' and inbounds(y_, x_):
-                    antenoids.add((y_, x_))
-                    y_ -= dy
-                    x_ -= dx
-    return len(antenoids)
-                
 
 if __name__ == '__main__':
     args = sys.argv[1:] if sys.argv[1:] else range(1, 26)
