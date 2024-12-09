@@ -3,7 +3,7 @@ from datetime import datetime
 from http import HTTPStatus
 import re
 import requests
-from typing import List, Callable, Set, Tuple
+from typing import List, Callable, Set
 
 from constants import DIRECTIONS
 
