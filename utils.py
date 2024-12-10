@@ -151,3 +151,29 @@ def day_8_count_antinodes(antennas: defaultdict,
                     y_ -= dy
                     x_ -= dx
     return len(antinodes)
+
+
+def day_9_compress_map(data: List[int], part='A') -> int:
+    start, end, map_ = 0, len(data) - 2 + len(data) % 2, []
+    while start < end:
+        map_.append((start // 2, data[start]))
+        data[start] = 0
+        start += 1
+        while start < end and data[end] <= data[start]:
+            data[start] -= data[end]
+            map_.append((end // 2, data[end]))
+            data[end] = 0
+            end -= 2
+        if start < end and 0 < data[start]:
+            data[end] -= data[start]
+            map_.append((end//2, data[start]))
+        start += 1
+
+    for v in {end, start}:
+        if data[v]:
+            map_.append((v//2, data[v]))
+            data[v] = 0
+
+    i = -1
+    return sum(id_ * (i := i + 1) for id_, len_ in map_
+               for _ in range(len_))

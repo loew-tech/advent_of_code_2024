@@ -5,7 +5,7 @@ import sys
 from classes import PatrolGuard
 from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
-                   day_8_count_antinodes)
+                   day_8_count_antinodes, day_9_compress_map)
 
 
 def day_1(part='A') -> int:
@@ -90,35 +90,11 @@ def day_8(part='A') -> int:
     return day_8_count_antinodes(antennas, inbounds, part)
 
 
-def day_9(part='A'):
+def day_9(part='A') -> int:
+    data = [int(i) for i in read_input(9, delim=None).strip()]
     if not part.upper() == 'A':
         return NotImplemented
-
-    data = [int(i) for i in read_input(9)[0].strip()]
-    start, end, ret = 0, len(data) - 2 + len(data) % 2, []
-    while start < end:
-        ret.append((start // 2, data[start]))
-        data[start] = 0
-        start += 1
-        while start < end and data[end] <= data[start]:
-            data[start] -= data[end]
-            ret.append((end // 2, data[end]))
-            data[end] = 0
-            end -= 2
-        if start < end and 0 < data[start]:
-            data[end] -= data[start]
-            ret.append((end//2, data[start]))
-            data[start] = 0
-        start += 1
-
-    for v in {end, start}:
-        if data[v]:
-            ret.append((v//2, data[v]))
-            data[v] = 0
-
-    i = -1
-    return sum(id_ * (i := i + 1) for id_, len_ in ret
-               for _ in range(len_))
+    return day_9_compress_map(data, part)
 
 
 if __name__ == '__main__':
