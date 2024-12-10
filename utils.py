@@ -13,7 +13,7 @@ ADVENT_URI = 'https://adventofcode.com/'
 def read_input(day: int | str, delim='\n', year=None) -> List[str]:
     year = year if year is not None else datetime.now().year
     with open('.env') as env_:
-        session_id = env_.read()
+        session_id = env_.read().strip()
     response = requests.get(f'{ADVENT_URI}{year}/day/{day}/input',
                             cookies={'session': session_id})
     if response.status_code == HTTPStatus.OK:
@@ -110,7 +110,7 @@ def day_5_sum_mid_page(predecessors: defaultdict[Set[int]],
     sum_ = 0
     for update in updates:
         if is_ordered(update):
-            sum_ += (part.uppers() == 'A') * update[len(update) // 2]
+            sum_ += (part.upper() == 'A') * update[len(update) // 2]
             continue
         if part.upper() == 'A':
             continue
