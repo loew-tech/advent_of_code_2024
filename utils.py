@@ -1,9 +1,11 @@
+from bisect import bisect_right, bisect_left
 from collections import defaultdict
 from datetime import datetime
 from http import HTTPStatus
 import re
 import requests
-from typing import List, Callable, Set
+from typing import List, Callable
+from sortedcontainers import SortedList
 
 from constants import DIRECTIONS
 
@@ -85,7 +87,7 @@ def day_4_word_search(data: List[str], part: str) -> int:
     return count
 
 
-def day_5_sum_mid_page(predecessors: defaultdict[Set[int]],
+def day_5_sum_mid_page(predecessors: defaultdict,
                        updates: List[List[int]], part='A') -> int:
     def is_ordered(update_: List[int]) -> bool:
         observed = set()
@@ -131,7 +133,7 @@ def day_7_check_eq(sol: int, operands: List[int], part='A') -> bool:
 
 
 def day_8_count_antinodes(antennas: defaultdict,
-                          inbounds: Callable[[int, int], bool],
+                          inbounds_: Callable[[int, int], bool],
                           part='A') -> int:
     antinodes = set()
     for antennas_ in antennas.values():
@@ -142,18 +144,18 @@ def day_8_count_antinodes(antennas: defaultdict,
 
                 dy, dx = y-y1, x-x1
                 antinodes_y, antinodes_x = y1-dy, x1-dx
-                if inbounds(antinodes_y, antinodes_x):
+                if inbounds_(antinodes_y, antinodes_x):
                     antinodes.add((antinodes_y, antinodes_x))
 
                 y_, x_ = y1, x1
-                while not part.upper() == 'A' and inbounds(y_, x_):
+                while not part.upper() == 'A' and inbounds_(y_, x_):
                     antinodes.add((y_, x_))
                     y_ -= dy
                     x_ -= dx
     return len(antinodes)
 
 
-def day_9_compress_map(data: List[int], part='A') -> int:
+def day_9_compress_map(data: List[int]) -> int:
     start, end, map_ = 0, len(data) - 2 + len(data) % 2, []
     while start < end:
         map_.append((start // 2, data[start]))
@@ -169,7 +171,7 @@ def day_9_compress_map(data: List[int], part='A') -> int:
             map_.append((end//2, data[start]))
         start += 1
 
-    for v in {end, start}:
+    for v in end, start:
         if data[v]:
             map_.append((v//2, data[v]))
             data[v] = 0
@@ -177,3 +179,43 @@ def day_9_compress_map(data: List[int], part='A') -> int:
     i = -1
     return sum(id_ * (i := i + 1) for id_, len_ in map_
                for _ in range(len_))
+
+
+def day_9b_compress_map(data: List[int]) -> int:
+    def flatten_map():
+        ret = ''
+        for id_, len_ in map_:
+            if id_:
+                ret += f'{id_}' * len_
+            else:
+                ret += '.' * len_
+        return ret
+
+    start, end, map_, modified = 0, len(data) - 2 + len(data) % 2, [], True
+    while start < end:
+        map_.append((start // 2, data[start]))
+        data[start] = 0
+        start += 1
+        while data[start] and modified:
+            modified = False
+            i = end + 2
+            while (i := i - 2) > start:
+                if data[i] and data[i] <= data[start]:
+                    map_.append((i//2, data[i]))
+                    data[start] -= data[i]
+                    data[i] = 0
+                    modified = True
+                    break
+        map_.append((0, data[start]))
+        data[start] = 0
+        start += 1
+
+    v = start
+    if data[v]:
+        map_.append((v//2, data[v]))
+        data[v] = 0
+
+    return NotImplemented
+    # i = -1
+    # return sum(id_ * (i := i + 1) for id_, len_ in map_
+    #            for _ in range(len_))

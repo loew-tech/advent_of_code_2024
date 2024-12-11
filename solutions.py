@@ -5,7 +5,8 @@ import sys
 from classes import PatrolGuard
 from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
-                   day_8_count_antinodes, day_9_compress_map)
+                   day_8_count_antinodes, day_9_compress_map,
+                   day_9b_compress_map)
 
 
 def day_1(part='A') -> int:
@@ -91,10 +92,12 @@ def day_8(part='A') -> int:
 
 
 def day_9(part='A') -> int:
-    data = [int(i) for i in read_input(9, delim=None).strip()]
-    if not part.upper() == 'A':
-        return NotImplemented
-    return day_9_compress_map(data, part)
+    # data = [int(i) for i in read_input(9, delim=None).strip()]
+    data = [int(i) for i in '2333133121414131402']
+    if part.upper() == 'A':
+        return day_9_compress_map(data)
+    # @TODO: 3826686846854 is too low
+    return day_9b_compress_map(data)
 
 
 if __name__ == '__main__':
