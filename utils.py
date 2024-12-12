@@ -7,7 +7,7 @@ import requests
 from typing import List, Callable
 from sortedcontainers import SortedList
 
-from constants import DIRECTIONS
+from constants import DIRECTIONS, CARDINAL_DIRECTIONS
 
 ADVENT_URI = 'https://adventofcode.com/'
 
@@ -142,8 +142,8 @@ def day_8_count_antinodes(antennas: defaultdict,
                 if y == y1 and x == x1:
                     continue
 
-                dy, dx = y-y1, x-x1
-                antinodes_y, antinodes_x = y1-dy, x1-dx
+                dy, dx = y - y1, x - x1
+                antinodes_y, antinodes_x = y1 - dy, x1 - dx
                 if inbounds_(antinodes_y, antinodes_x):
                     antinodes.add((antinodes_y, antinodes_x))
 
@@ -168,12 +168,12 @@ def day_9_compress_map(data: List[int]) -> int:
             end -= 2
         if start < end and 0 < data[start]:
             data[end] -= data[start]
-            map_.append((end//2, data[start]))
+            map_.append((end // 2, data[start]))
         start += 1
 
     for v in end, start:
         if data[v]:
-            map_.append((v//2, data[v]))
+            map_.append((v // 2, data[v]))
             data[v] = 0
 
     i = -1
@@ -182,40 +182,32 @@ def day_9_compress_map(data: List[int]) -> int:
 
 
 def day_9b_compress_map(data: List[int]) -> int:
-    def flatten_map():
-        ret = ''
-        for id_, len_ in map_:
-            if id_:
-                ret += f'{id_}' * len_
-            else:
-                ret += '.' * len_
-        return ret
-
     start, end, map_, modified = 0, len(data) - 2 + len(data) % 2, [], True
-    while start < end:
-        map_.append((start // 2, data[start]))
+    used = set()
+    while start <= end:
+        if start in used:
+            map_.append((0, data[start]))
+        else:
+            map_.append((start // 2, data[start]))
         data[start] = 0
         start += 1
-        while data[start] and modified:
-            modified = False
-            i = end + 2
-            while (i := i - 2) > start:
-                if data[i] and data[i] <= data[start]:
-                    map_.append((i//2, data[i]))
-                    data[start] -= data[i]
-                    data[i] = 0
-                    modified = True
-                    break
+        if start == len(data):
+            break
+        i = end + 2
+        while data[start] and (i := i - 2) > start:
+            if i in used:
+                continue
+            if data[i] and data[i] <= data[start]:
+                map_.append((i // 2, data[i]))
+                data[start] -= data[i]
+                used.add(i)
         map_.append((0, data[start]))
         data[start] = 0
         start += 1
 
-    v = start
-    if data[v]:
-        map_.append((v//2, data[v]))
-        data[v] = 0
+    i = -1
+    return sum(id_ * (i := i + 1) for id_, len_ in map_
+               for _ in range(len_))
 
-    return NotImplemented
-    # i = -1
-    # return sum(id_ * (i := i + 1) for id_, len_ in map_
-    #            for _ in range(len_))
+
+

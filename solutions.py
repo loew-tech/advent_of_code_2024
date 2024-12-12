@@ -92,11 +92,9 @@ def day_8(part='A') -> int:
 
 
 def day_9(part='A') -> int:
-    # data = [int(i) for i in read_input(9, delim=None).strip()]
-    data = [int(i) for i in '2333133121414131402']
+    data = [int(i) for i in read_input(9, delim=None).strip()]
     if part.upper() == 'A':
         return day_9_compress_map(data)
-    # @TODO: 3826686846854 is too low
     return day_9b_compress_map(data)
 
 
