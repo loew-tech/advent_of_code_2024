@@ -210,23 +210,24 @@ def day_9b_compress_map(data: List[int]) -> int:
                for _ in range(len_))
 
 
-def day_10_sum_scores(data: List[List[int]]) -> int:
+def day_10_sum_scores(data: List[List[int]], part='A') -> int:
     starts = [(y, x) for y, row in enumerate(data) for x, v in enumerate(row)
               if not v]
     inbounds_ = get_inbounds(data)
 
     def bfs(start_: Tuple[int, int]) -> int:
         current_val = 0
-        to_search = {start_}
+        to_search = {start_: 1}
         while to_search and current_val < 9:
             current_val += 1
-            next_search = set()
-            for y, x in to_search:
+            next_search = defaultdict(int)
+            for (y, x), paths in to_search.items():
                 for yi, xi in CARDINAL_DIRECTIONS:
                     y_, x_ = y + yi, x + xi
                     if inbounds_(y_, x_) and data[y_][x_] == current_val:
-                        next_search.add((y_, x_))
+                        next_search[(y_, x_)] += paths
             to_search = next_search
-        return current_val == 9 and len(to_search)
+        return current_val == 9 and (part.upper() == 'A' and len(to_search)
+                                     or sum(to_search.values()))
 
     return sum(bfs(start) for start in starts)

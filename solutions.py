@@ -99,10 +99,8 @@ def day_9(part='A') -> int:
 
 
 def day_10(part='A') -> int:
-    data = [[int(i) for i in row] for row in read_input(10)]
-    if part.upper() == 'A':
-        return day_10_sum_scores(data)
-    return NotImplemented
+    return day_10_sum_scores([[int(i) for i in row] for row in read_input(10)],
+                             part)
 
 
 if __name__ == '__main__':
