@@ -6,7 +6,7 @@ from classes import PatrolGuard
 from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
                    day_8_count_antinodes, day_9_compress_map,
-                   day_9b_compress_map, day_10_sum_scores)
+                   day_9b_compress_map, day_10_sum_scores, day_11_blink_stones)
 
 
 def day_1(part='A') -> int:
@@ -101,6 +101,13 @@ def day_9(part='A') -> int:
 def day_10(part='A') -> int:
     return day_10_sum_scores([[int(i) for i in row] for row in read_input(10)],
                              part)
+
+
+def day_11(part='A') -> int:
+    iterations = 25 if part.upper() == 'A' else 75
+    return day_11_blink_stones([int(i) for i
+                                in read_input(11, delim=None).split(' ')],
+                               iterations)
 
 
 if __name__ == '__main__':

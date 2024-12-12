@@ -1,18 +1,17 @@
-from bisect import bisect_right, bisect_left
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime
+from functools import cache
 from http import HTTPStatus
 import re
 import requests
 from typing import List, Callable, Tuple
-from sortedcontainers import SortedList
 
 from constants import DIRECTIONS, CARDINAL_DIRECTIONS
 
 ADVENT_URI = 'https://adventofcode.com/'
 
 
-def read_input(day: int | str, delim='\n', year=None) -> List[str]:
+def read_input(day: int | str, delim='\n', year=None) -> List[str] | str:
     year = year if year is not None else datetime.now().year
     with open('.env') as env_:
         session_id = env_.read().strip()
@@ -231,3 +230,25 @@ def day_10_sum_scores(data: List[List[int]], part='A') -> int:
                                      or sum(to_search.values()))
 
     return sum(bfs(start) for start in starts)
+
+
+# @TODO: 177012 is too low
+def day_11_blink_stones(data: List[int], iterations: int) -> int:
+    @cache
+    def blink(stone_) -> List[int]:
+        if not stone_:
+            return [1]
+        elif not len(str_ := str(stone_)) % 2:
+            mid_ = len(str_) // 2
+            return [int(str_[:mid_]), int(str_[mid_:])]
+        else:
+            return [stone_ * 2024]
+
+    counter = Counter(data)
+    for _ in range(iterations):
+        new_counts = defaultdict(int)
+        for stone, count in counter.items():
+            for new_stone in blink(stone):
+                new_counts[new_stone] += count
+        counter = new_counts
+    return sum(counter.values())
