@@ -4,7 +4,7 @@ from datetime import datetime
 from http import HTTPStatus
 import re
 import requests
-from typing import List, Callable
+from typing import List, Callable, Tuple
 from sortedcontainers import SortedList
 
 from constants import DIRECTIONS, CARDINAL_DIRECTIONS
@@ -210,4 +210,23 @@ def day_9b_compress_map(data: List[int]) -> int:
                for _ in range(len_))
 
 
+def day_10_sum_scores(data: List[List[int]]) -> int:
+    starts = [(y, x) for y, row in enumerate(data) for x, v in enumerate(row)
+              if not v]
+    inbounds_ = get_inbounds(data)
 
+    def bfs(start_: Tuple[int, int]) -> int:
+        current_val = 0
+        to_search = {start_}
+        while to_search and current_val < 9:
+            current_val += 1
+            next_search = set()
+            for y, x in to_search:
+                for yi, xi in CARDINAL_DIRECTIONS:
+                    y_, x_ = y + yi, x + xi
+                    if inbounds_(y_, x_) and data[y_][x_] == current_val:
+                        next_search.add((y_, x_))
+            to_search = next_search
+        return current_val == 9 and len(to_search)
+
+    return sum(bfs(start) for start in starts)
