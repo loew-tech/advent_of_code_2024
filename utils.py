@@ -232,7 +232,6 @@ def day_10_sum_scores(data: List[List[int]], part='A') -> int:
     return sum(bfs(start) for start in starts)
 
 
-# @TODO: 177012 is too low
 def day_11_blink_stones(data: List[int], iterations: int) -> int:
     @cache
     def blink(stone_) -> List[int]:
@@ -252,3 +251,35 @@ def day_11_blink_stones(data: List[int], iterations: int) -> int:
                 new_counts[new_stone] += count
         counter = new_counts
     return sum(counter.values())
+
+
+def day_12_calc_fence_cost(data: List[str]) -> int:
+    inbounds_, used = get_inbounds(data), set()
+
+    def bfs(y_, x_: int, target: str) -> Tuple[int, int]:
+        to_search, perim, area = [(y_, x_)], 0, set()
+        while to_search:
+            next_search = set()
+            for yi, xi in to_search:
+                if (yi, xi) in area:
+                    continue
+                area.add((yi, xi))
+                used.add((yi, xi))
+                for yj, xj in CARDINAL_DIRECTIONS:
+                    if inbounds_(yi + yj, xi + xj) and data[yi + yj][
+                        xi + xj] == \
+                            target:
+                        next_search.add((yi + yj, xi + xj))
+                    else:
+                        perim += 1
+            to_search = next_search
+        return perim, len(area)
+
+    cost = 0
+    for y, row in enumerate(data):
+        for x, v in enumerate(row):
+            if (y, x) in used:
+                continue
+            perim_, area_ = bfs(y, x, v)
+            cost += perim_ * area_
+    return cost
