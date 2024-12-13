@@ -4,7 +4,9 @@ from functools import cache
 from http import HTTPStatus
 import re
 import requests
-from typing import List, Callable, Tuple
+from typing import List, Callable, Tuple, Set
+
+from sortedcontainers import SortedList
 
 from constants import DIRECTIONS, CARDINAL_DIRECTIONS
 
@@ -253,11 +255,11 @@ def day_11_blink_stones(data: List[int], iterations: int) -> int:
     return sum(counter.values())
 
 
-def day_12_calc_fence_cost(data: List[str]) -> int:
+def day_12_calc_fence_cost(data: List[str], part) -> int:
     inbounds_, used = get_inbounds(data), set()
 
-    def bfs(y_, x_: int, target: str) -> Tuple[int, int]:
-        to_search, perim, area = [(y_, x_)], 0, set()
+    def bfs(y_, x_: int, target: str) -> Tuple[Set, Set, int]:
+        to_search, perim, area, perim_size_ = [(y_, x_)], set(), set(), 0
         while to_search:
             next_search = set()
             for yi, xi in to_search:
@@ -271,15 +273,49 @@ def day_12_calc_fence_cost(data: List[str]) -> int:
                             target:
                         next_search.add((yi + yj, xi + xj))
                     else:
-                        perim += 1
+                        perim_size_ += 1
+                        perim.add((yi, xi))
             to_search = next_search
-        return perim, len(area)
+        return perim, area, perim_size_
+
+    def calc_nums_sides(perim: Set[Tuple[int, int]],
+                        target: str) -> int:
+        y_lines, x_lines = defaultdict(SortedList), defaultdict(SortedList)
+
+        for y_, x_ in perim:
+            y_lines[y_].add(x_)
+            x_lines[x_].add(y_)
+
+        sides = 0
+        for y_, lst in y_lines.items():
+            last_u, last_d = -2, -2
+            for x_ in lst:
+                if not inbounds_(y_ - 1, x_) or not data[y_ - 1][x_] == target:
+                    sides += not (x_ == last_u + 1)
+                    last_u = x_
+                if not inbounds_(y_ + 1, x_) or not data[y_ + 1][x_] == target:
+                    sides += not (x_ == last_d + 1)
+                    last_d = x_
+
+        for x_, lst in x_lines.items():
+            last_l, last_r = -2, -2
+            for y_ in lst:
+                if not inbounds_(y_, x_ - 1) or not data[y_][x_ - 1] == target:
+                    sides += not (y_ == last_l + 1)
+                    last_l = y_
+                if not inbounds_(y_, x_ + 1) or not data[y_][x_ + 1] == target:
+                    sides += not (y_ == last_r + 1)
+                    last_r = y_
+        return sides
 
     cost = 0
     for y, row in enumerate(data):
         for x, v in enumerate(row):
             if (y, x) in used:
                 continue
-            perim_, area_ = bfs(y, x, v)
-            cost += perim_ * area_
+            perim_, area_, perim_size = bfs(y, x, v)
+            if part.upper() == 'A':
+                cost += perim_size * len(area_)
+            else:
+                cost += calc_nums_sides(perim_, v) * len(area_)
     return cost

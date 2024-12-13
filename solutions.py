@@ -112,9 +112,7 @@ def day_11(part='A') -> int:
 
 
 def day_12(part='A') -> int:
-    if part.upper() == 'A':
-        return day_12_calc_fence_cost(read_input(12, delim='\n'))
-    return NotImplemented
+    return day_12_calc_fence_cost(read_input(12, delim='\n'), part)
 
 
 if __name__ == '__main__':
