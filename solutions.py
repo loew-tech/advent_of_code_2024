@@ -2,7 +2,7 @@ from collections import Counter, defaultdict
 import inspect
 import sys
 
-from classes import PatrolGuard
+from classes import PatrolGuard, LinearSystem
 from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
                    day_8_count_antinodes, day_9_compress_map,
@@ -105,14 +105,24 @@ def day_10(part='A') -> int:
 
 
 def day_11(part='A') -> int:
+    data = [int(i) for i in read_input(11, delim=None).split()]
     iterations = 25 if part.upper() == 'A' else 75
-    return day_11_blink_stones([int(i) for i
-                                in read_input(11, delim=None).split(' ')],
-                               iterations)
+    return day_11_blink_stones(data, iterations)
 
 
 def day_12(part='A') -> int:
     return day_12_calc_fence_cost(read_input(12, delim='\n'), part)
+
+
+def day_13(part='A') -> int:
+    if not part.upper() == 'A':
+        return NotImplemented
+
+    data, cost = read_input(13, delim='\n\n'), 0
+    for entry in data:
+        attainable, tokens = LinearSystem(entry).get_prize()
+        cost += attainable * tokens
+    return cost
 
 
 if __name__ == '__main__':

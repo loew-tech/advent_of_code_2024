@@ -281,7 +281,6 @@ def day_12_calc_fence_cost(data: List[str], part) -> int:
     def calc_nums_sides(perim: Set[Tuple[int, int]],
                         target: str) -> int:
         y_lines, x_lines = defaultdict(SortedList), defaultdict(SortedList)
-
         for y_, x_ in perim:
             y_lines[y_].add(x_)
             x_lines[x_].add(y_)
