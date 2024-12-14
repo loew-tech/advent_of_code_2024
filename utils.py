@@ -20,7 +20,7 @@ def read_input(day: int | str, delim='\n', year=None) -> List[str] | str:
     response = requests.get(f'{ADVENT_URI}{year}/day/{day}/input',
                             cookies={'session': session_id})
     if response.status_code == HTTPStatus.OK:
-        return response.text.split(delim)[:-1] if delim else response.text
+        return response.text.strip().split(delim) if delim else response.text
 
 
 def get_inbounds(grid: List[List[any] | str]) -> Callable[[int, int], bool]:

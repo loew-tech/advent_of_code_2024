@@ -115,12 +115,9 @@ def day_12(part='A') -> int:
 
 
 def day_13(part='A') -> int:
-    if not part.upper() == 'A':
-        return NotImplemented
-
     data, cost = read_input(13, delim='\n\n'), 0
-    for entry in data:
-        attainable, tokens = LinearSystem(entry).get_prize()
+    for i, (entry) in enumerate(data):
+        attainable, tokens = LinearSystem(entry, part).get_prize()
         cost += attainable * tokens
     return cost
 

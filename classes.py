@@ -39,11 +39,14 @@ class PatrolGuard:
 
 class LinearSystem:
 
-    def __init__(self, entry: str):
+    def __init__(self, entry, part: str):
         entries = entry.split('\n')
+        self._part = part
         self.ax, self.ay = [int(i) for i in re.findall(r'\d+', entries[0])]
         self.bx, self.by = [int(i) for i in re.findall(r'\d+', entries[1])]
         self.x, self.y = [int(i) for i in re.findall(r'\d+', entries[2])]
+        self.x += 10_000_000_000_000 * (not self._part.upper() == 'A')
+        self.y += 10_000_000_000_000 * (not self._part.upper() == 'A')
 
     def solve(self):
         ratio = (self.ax / self.ay)
@@ -51,7 +54,8 @@ class LinearSystem:
         a = (self.x - self.bx * b) / self.ax
         return a, b
 
-    def get_prize(self, limit=100):
+    def get_prize(self):
+        limit = 100 if self._part.upper() == 'A' else float('inf')
         a, b = self.solve()
         if 0.999 <= a % 1 <= 0.99999999999999999999999999999999999999:
             a = math.ceil(a)
@@ -59,10 +63,6 @@ class LinearSystem:
             b = math.ceil(b)
 
         attainable = min(a, b) >= 0 and \
-                     max(a % 1, b % 1) < .0001 and \
+                     max(a % 1, b % 1) < .01 and \
                      max(a, b) <= limit
         return attainable, int(3 * a + b)
-
-    def __repr__(self):
-        return f'ax={self.ax} ay={self.ay} bx={self.bx} by={self.by} x=' \
-               f'{self.x} y={self.y}'
