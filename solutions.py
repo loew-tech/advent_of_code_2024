@@ -1,3 +1,4 @@
+import re
 from collections import Counter, defaultdict
 import inspect
 import sys
@@ -7,7 +8,7 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
                    day_8_count_antinodes, day_9_compress_map,
                    day_9b_compress_map, day_10_sum_scores, day_11_blink_stones,
-                   day_12_calc_fence_cost)
+                   day_12_calc_fence_cost, day_14_calc_quadrant_prod)
 
 
 def day_1(part='A') -> int:
@@ -116,10 +117,18 @@ def day_12(part='A') -> int:
 
 def day_13(part='A') -> int:
     data, cost = read_input(13, delim='\n\n'), 0
-    for i, (entry) in enumerate(data):
+    for entry in data:
         attainable, tokens = LinearSystem(entry, part).get_prize()
         cost += attainable * tokens
     return cost
+
+
+def day_14(part='A'):
+    data = [[int(i) for i in re.findall(r'-?\d+', row)]
+            for row in read_input(14)]
+    if not part.upper() == 'A':
+        return day_14_calc_quadrant_prod(data)
+    return NotImplemented
 
 
 if __name__ == '__main__':

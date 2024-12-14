@@ -268,9 +268,8 @@ def day_12_calc_fence_cost(data: List[str], part) -> int:
                 area.add((yi, xi))
                 used.add((yi, xi))
                 for yj, xj in CARDINAL_DIRECTIONS:
-                    if inbounds_(yi + yj, xi + xj) and data[yi + yj][
-                        xi + xj] == \
-                            target:
+                    if inbounds_(yi + yj, xi + xj) and \
+                            data[yi + yj][xi + xj] == target:
                         next_search.add((yi + yj, xi + xj))
                     else:
                         perim_size_ += 1
@@ -318,3 +317,28 @@ def day_12_calc_fence_cost(data: List[str], part) -> int:
             else:
                 cost += calc_nums_sides(perim_, v) * len(area_)
     return cost
+
+
+def day_14_calc_quadrant_prod(data: List[List[int]]) -> int:
+    q1, q2, q3, q4 = 0, 0, 0, 0
+
+    def inc_quads(y_, x_):
+        nonlocal q1, q2, q3, q4
+        if x_ < 50 and y_ < 51:
+            q1 += 1
+        elif x_ > 50 and y_ < 51:
+            q2 += 1
+        elif x_ < 50 and y_ > 51:
+            q3 += 1
+        elif x_ > 50 and y_ > 51:
+            q4 += 1
+
+    for x, y, xi, yi in data:
+        x = (x + xi * 100) % 101
+        if x < 0:
+            x = 100 + x
+        y = (y + yi * 100) % 103
+        if y < 0:
+            y = 102 + y
+        inc_quads(y, x)
+    return q1 * q2 * q3 * q4
