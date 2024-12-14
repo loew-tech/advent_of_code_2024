@@ -66,3 +66,15 @@ class LinearSystem:
                      max(a % 1, b % 1) < .01 and \
                      max(a, b) <= limit
         return attainable, int(3 * a + b)
+
+
+class SecurityRobot:
+
+    def __init__(self, robot: List[int], width=101, height=103):
+        self.x, self.y, self._xi, self._yi = robot
+        self._width, self._height = width, height
+
+    def move(self):
+        self.x = (self.x + self._xi) % self._width
+        self.y = (self.y + self._yi) % self._height
+        return self.y, self.x

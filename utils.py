@@ -8,6 +8,7 @@ from typing import List, Callable, Tuple, Set
 
 from sortedcontainers import SortedList
 
+from classes import SecurityRobot
 from constants import DIRECTIONS, CARDINAL_DIRECTIONS
 
 ADVENT_URI = 'https://adventofcode.com/'
@@ -342,3 +343,11 @@ def day_14_calc_quadrant_prod(data: List[List[int]]) -> int:
             y = 102 + y
         inc_quads(y, x)
     return q1 * q2 * q3 * q4
+
+
+def day_14_find_tree(data: List[List[int]]) -> int:
+    secs, num_bots, positions = 0, len(data), set()
+    robots = [SecurityRobot(robot) for robot in data]
+    while len(positions) < num_bots and (secs := secs + 1):
+        positions = {bot.move() for bot in robots}
+    return secs
