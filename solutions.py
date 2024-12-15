@@ -3,7 +3,7 @@ from collections import Counter, defaultdict
 import inspect
 import sys
 
-from classes import PatrolGuard, LinearSystem, WarehouseRobot
+from classes import PatrolGuard, LinearSystem, WarehouseRobot, WarehouseRobotB
 from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
                    day_8_count_antinodes, day_9_compress_map,
@@ -132,13 +132,14 @@ def day_14(part='A') -> int:
     return day_14_find_tree(data)
 
 
-def day_15(part='A'):
+def day_15(part='A') -> int:
     map_, moves = read_input(15, delim='\n\n')
     map_ = map_.split('\n')
     moves = moves.replace('\n', '')
-    robot = WarehouseRobot(map_, moves)
+    robot = WarehouseRobot(map_, moves) if part.upper() == 'A' else\
+        WarehouseRobotB(map_, moves)
     robot.move()
-    return robot.calc_gps_sum() if part.upper() == 'A' else NotImplemented
+    return robot.calc_gps_sum()
 
 
 if __name__ == '__main__':

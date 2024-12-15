@@ -97,24 +97,100 @@ class WarehouseRobot:
     def move(self) -> None:
         movements = dict(zip('^<>v', CARDINAL_DIRECTIONS))
 
-        def inbounds(y_loc, x_loc: int) -> bool:
-            return 0 <= y_loc < len(self._map) and\
-                   0 <= x_loc < len(self._map[y_loc])
-
         for dir_ in self._moves:
             yi, xi = movements[dir_]
             y, x = self._y + yi, self._x + xi
-            y_, x_, moves = y, x, []
-            while inbounds(y_, x_) and (y_, x_) in self._boxes:
-                moves.append((y_, x_))
+            y_, x_, = y, x
+            while (y_, x_) in self._boxes:
                 y_ += yi
                 x_ += xi
-            if inbounds(y_, x_) and self._map[y_][x_] == '#':
+            if self._map[y_][x_] == '#':
                 continue
             self._y, self._x = y, x
-            if moves:
-                self._boxes.remove(moves[0])
+            if not (y, x) == (y_, x_):
+                self._boxes.remove((y, x))
                 self._boxes.add((y_, x_))
 
     def calc_gps_sum(self) -> int:
         return sum(y * 100 + x for y, x in self._boxes)
+
+
+class WarehouseRobotB:
+
+    def __init__(self, map_: List[str], moves: str):
+        self._doubles = set()
+        map_ = [[char for char in line for _ in range(2)] for line in map_]
+        for y, row in enumerate(map_):
+            skip = False
+            for x, char in enumerate(row):
+                if skip:
+                    skip = False
+                    continue
+                elif char == 'O':
+                    self._doubles.add((y, x, x + 1))
+                    skip = True
+                elif char == '@':
+                    self._y, self._x = y, x
+        self._map, self._moves = map_, moves
+        self._doubles_count = len(self._doubles)
+
+    def move(self) -> None:
+        movements = dict(zip('^<>v', CARDINAL_DIRECTIONS))
+
+        for dir_ in self._moves:
+            yi, xi = movements[dir_]
+            y, x = self._y + yi, self._x + xi
+            if self._map[y][x] == '#':
+                continue
+            y_, x_, = y, x
+            if not yi:
+                to_move, (dx, dxx) = [], (-1, 0) if xi == -1 else (0, 1)
+                while (y_, x_ + dx, x_ + dxx) in self._doubles:
+                    to_move.append((y_, x_ + dx, x_ + dxx))
+                    if self._map[y_][x_+xi] == '#':
+                        to_move = []
+                        break
+                    x_ += 2 * xi
+                if self._map[y_][x_] == '#':
+                    continue
+                for (yy, xx, xxx) in to_move:
+                    self._doubles.remove((yy, xx, xxx))
+                    self._doubles.add((yy, xx + xi, xxx + xi))
+                self._y, self._x = y, x
+            else:
+                to_search = [(y_, x_ - 1, x_)] if \
+                    (y_, x_ - 1, x_) in self._doubles else []
+                to_search = to_search or ([(y_, x_, x_ + 1)] if
+                                          (y_, x_,
+                                           x_ + 1) in self._doubles else [])
+                to_move = []
+                blocked = False
+                while to_search:
+                    next_search = set()
+                    for yy, xx, xxx in to_search:
+                        if self._map[yy + yi][xx] == '#' or \
+                                self._map[yy + yi][xxx] == '#':
+                            blocked = True
+                            to_move = []
+                            next_search = []
+                            break
+                        to_move.append((yy, xx, xxx))
+                        if (yy + yi, xx + 1, xxx + 1) in self._doubles:
+                            next_search.add((yy + yi, xx + 1, xxx + 1))
+                        if (yy + yi, xx - 1, xxx - 1) in self._doubles:
+                            next_search.add((yy + yi, xx - 1, xxx - 1))
+                        if (yy + yi, xx, xxx) in self._doubles:
+                            next_search.add((yy + yi, xx, xxx))
+                    to_search = next_search
+                self._y, self._x = (y, x) if not blocked else (
+                    self._y, self._x)
+                added = set()
+                for box in to_move:
+                    if box not in added:
+                        self._doubles.remove(box)
+                    yy, xx, xxx = box
+                    added.add((yy + yi, xx, xxx))
+                    self._doubles.add((yy + yi, xx, xxx))
+
+    def calc_gps_sum(self) -> int:
+        return sum(y * 100 + x for y, x, _ in self._doubles)
