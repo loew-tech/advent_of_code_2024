@@ -2,6 +2,8 @@ import math
 import re
 from typing import List
 
+from constants import CARDINAL_DIRECTIONS
+
 
 class PatrolGuard:
 
@@ -78,3 +80,41 @@ class SecurityRobot:
         self.x = (self.x + self._xi) % self._width
         self.y = (self.y + self._yi) % self._height
         return self.y, self.x
+
+
+class WarehouseRobot:
+
+    def __init__(self, map_: List[str], moves: str):
+        self._map, self._moves = map_, moves
+        self._boxes = set()
+        for y, row in enumerate(map_):
+            for x, char in enumerate(row):
+                if char == '@':
+                    self._y, self._x = y, x
+                elif char == 'O':
+                    self._boxes.add((y, x))
+
+    def move(self) -> None:
+        movements = dict(zip('^<>v', CARDINAL_DIRECTIONS))
+
+        def inbounds(y_loc, x_loc: int) -> bool:
+            return 0 <= y_loc < len(self._map) and\
+                   0 <= x_loc < len(self._map[y_loc])
+
+        for dir_ in self._moves:
+            yi, xi = movements[dir_]
+            y, x = self._y + yi, self._x + xi
+            y_, x_, moves = y, x, []
+            while inbounds(y_, x_) and (y_, x_) in self._boxes:
+                moves.append((y_, x_))
+                y_ += yi
+                x_ += xi
+            if inbounds(y_, x_) and self._map[y_][x_] == '#':
+                continue
+            self._y, self._x = y, x
+            if moves:
+                self._boxes.remove(moves[0])
+                self._boxes.add((y_, x_))
+
+    def calc_gps_sum(self) -> int:
+        return sum(y * 100 + x for y, x in self._boxes)

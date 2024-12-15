@@ -3,7 +3,7 @@ from collections import Counter, defaultdict
 import inspect
 import sys
 
-from classes import PatrolGuard, LinearSystem
+from classes import PatrolGuard, LinearSystem, WarehouseRobot
 from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
                    day_8_count_antinodes, day_9_compress_map,
@@ -129,8 +129,16 @@ def day_14(part='A') -> int:
             for row in read_input(14)]
     if part.upper() == 'A':
         return day_14_calc_quadrant_prod(data)
-    # @TODO: partB 6645 is too high
     return day_14_find_tree(data)
+
+
+def day_15(part='A'):
+    map_, moves = read_input(15, delim='\n\n')
+    map_ = map_.split('\n')
+    moves = moves.replace('\n', '')
+    robot = WarehouseRobot(map_, moves)
+    robot.move()
+    return robot.calc_gps_sum() if part.upper() == 'A' else NotImplemented
 
 
 if __name__ == '__main__':

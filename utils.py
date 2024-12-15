@@ -336,11 +336,11 @@ def day_14_calc_quadrant_prod(data: List[List[int]]) -> int:
 
     for x, y, xi, yi in data:
         x = (x + xi * 100) % 101
-        if x < 0:
-            x = 100 + x
+        x = x if x >= 0 else 100 + x
+
         y = (y + yi * 100) % 103
-        if y < 0:
-            y = 102 + y
+        y = y if y >= 0 else y + 102
+
         inc_quads(y, x)
     return q1 * q2 * q3 * q4
 
