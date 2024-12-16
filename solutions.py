@@ -9,7 +9,7 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_8_count_antinodes, day_9_compress_map,
                    day_9b_compress_map, day_10_sum_scores, day_11_blink_stones,
                    day_12_calc_fence_cost, day_14_calc_quadrant_prod,
-                   day_14_find_tree, day_16_cross_maze)
+                   day_14_find_tree, day_16_maze_costs)
 
 
 def day_1(part='A') -> int:
@@ -144,8 +144,9 @@ def day_15(part='A') -> int:
 
 def day_16(part='A') -> int:
     data = read_input(16)
+    (end_y, end_x), min_, costs = day_16_maze_costs(data)
     if part.upper() == 'A':
-        return day_16_cross_maze(data)
+        return min_
     return NotImplemented
 
 
