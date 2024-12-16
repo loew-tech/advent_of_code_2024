@@ -351,3 +351,58 @@ def day_14_find_tree(data: List[List[int]]) -> int:
     while len(positions) < num_bots and (secs := secs + 1):
         positions = {bot.move() for bot in robots}
     return secs
+
+
+def day_16_cross_maze(maze: List[str]) -> int:
+    start_y, start_x, end_y, end_x = None, None, None, None
+    for y_, row in enumerate(maze):
+        for x_, v in enumerate(row):
+            if v == 'S':
+                start_y, start_x = y_, x_
+            elif v == 'E':
+                end_y, end_x = y_, x_
+
+    costs = {(start_y, start_x, 0): 0}
+    increments = ((0, 1), (1, 0), (0, -1), (-1, 0))
+    to_search = {(start_y, start_x, 0)}
+    min_ = float('inf')
+    # print(f'{end_y=} {end_x=}\n')
+    while to_search:
+        next_search = set()
+        # print(f'{to_search=} {costs=}')
+        for y, x, i in to_search:
+            # print(f'\t{y=} {x=} {i=} {increments[i]=} {costs[(y, x, i)]=}'
+            #       f' {next_search=}')
+            if maze[y][x] == '#':
+                continue
+            if maze[y][x] == 'E':
+                min_ = min(min_, costs[(y, x, i)])
+                # print(f'\t\t ** {min_=}')
+                continue
+
+            j = (i + 1) % len(increments)
+            if (y, x, j) not in costs or \
+                    costs[(y, x, i)] + 1000 < costs[(y, x, j)]:
+                costs[(y, x, j)] = costs[(y, x, i)] + 1000
+                next_search.add((y, x, j))
+                # print(f'\tturning: {(y, x, j)=} {costs[(y, x, j)]=}')
+
+            j = (i - 1) if i else 3
+            if (y, x, j) not in costs or \
+                    costs[(y, x, i)] + 1000 < costs[(y, x, j)]:
+                costs[(y, x, j)] = costs[(y, x, i)] + 1000
+                next_search.add((y, x, j))
+                # print(f'\tturning: {(y, x, j)=} {costs[(y, x, j)]=}')
+
+            yi, xi = increments[i]
+            if (y + yi, x + xi, i) not in costs or \
+                    costs[(y, x, i)] + 1 < costs[(y + yi, x + xi, i)]:
+                costs[(y + yi, x + xi, i)] = costs[(y, x, i)] + 1
+                next_search.add((y + yi, x + xi, i))
+                # print(f'\tforward: {(y+yi, x+xi, i)=} '
+                #       f'{costs[(y + yi, x + xi, i)]=}')
+            # print()
+        to_search = next_search
+        # input('BREAK: ')
+        # print('\n**********\n')
+    return min_

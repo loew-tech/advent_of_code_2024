@@ -9,7 +9,7 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_8_count_antinodes, day_9_compress_map,
                    day_9b_compress_map, day_10_sum_scores, day_11_blink_stones,
                    day_12_calc_fence_cost, day_14_calc_quadrant_prod,
-                   day_14_find_tree)
+                   day_14_find_tree, day_16_cross_maze)
 
 
 def day_1(part='A') -> int:
@@ -140,6 +140,13 @@ def day_15(part='A') -> int:
         WarehouseRobotB(map_, moves)
     robot.move()
     return robot.calc_gps_sum()
+
+
+def day_16(part='A') -> int:
+    data = read_input(16)
+    if part.upper() == 'A':
+        return day_16_cross_maze(data)
+    return NotImplemented
 
 
 if __name__ == '__main__':
