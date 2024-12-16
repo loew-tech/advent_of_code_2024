@@ -4,7 +4,7 @@ from functools import cache
 from http import HTTPStatus
 import re
 import requests
-from typing import List, Callable, Tuple, Set, Dict
+from typing import List, Callable, Tuple, Set, Any, Dict
 
 from sortedcontainers import SortedList
 
@@ -353,8 +353,7 @@ def day_14_find_tree(data: List[List[int]]) -> int:
     return secs
 
 
-def day_16_maze_costs(maze: List[str]) \
-        -> Tuple[Tuple[int, int], int, Dict[Tuple[int, int, int], int]]:
+def day_16_maze_costs(maze: List[str]) -> Tuple:
     start_y, start_x, end_y, end_x = None, None, None, None
     for y_, row in enumerate(maze):
         for x_, v in enumerate(row):
@@ -370,6 +369,7 @@ def day_16_maze_costs(maze: List[str]) \
         next_search = set()
         for y, x, i in to_search:
             if maze[y][x] == '#':
+                del costs[(y, x, i)]
                 continue
             if maze[y][x] == 'E':
                 min_ = min(min_, costs[(y, x, i)])
@@ -394,3 +394,34 @@ def day_16_maze_costs(maze: List[str]) \
                 next_search.add((y + yi, x + xi, i))
         to_search = next_search
     return (end_y, end_x), min_, costs
+
+
+def day_16b_count_best_seats(ending_loc: Tuple, costs: Dict,
+                             min_: int) -> int:
+    increments = ((0, 1), (1, 0), (0, -1), (-1, 0))
+    best_seats, to_search = {ending_loc}, set()
+    for i in range(4):
+        if costs.get((*ending_loc, i)) == min_:
+            to_search.add((*ending_loc, i, min_))
+
+    while to_search:
+        next_search = set()
+        for y, x, i, cost in to_search:
+            min_, mins = float('inf'), set()
+            yi, xi = increments[i]
+            if (y - yi, x - xi, i) in costs and \
+                    costs[(y - yi, x - xi, i)] < cost:
+                min_ = costs[(y - yi, x - xi, i)]
+                next_search.add((y - yi, x - xi, i, min_))
+
+            j, k = (i + 1) % 4, i - 1 if i else 3
+            for inc in j, k:
+                if (y, x, inc) in costs and \
+                        costs[(y, x, inc)] <= min(min_, costs[(y, x, i)]):
+                    min_, mins = costs[(y, x, inc)], {(y, x, inc)}
+            next_search |= {(y, x, i, min_) for y, x, i in mins}
+
+        best_seats |= {(y, x) for y, x, *_ in next_search}
+        to_search = next_search
+
+    return len(best_seats)
