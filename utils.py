@@ -375,17 +375,12 @@ def day_16_maze_costs(maze: List[str]) -> Tuple:
                 min_ = min(min_, costs[(y, x, i)])
                 continue
 
-            j = (i + 1) % len(increments)
-            if (y, x, j) not in costs or \
-                    costs[(y, x, i)] + 1000 < costs[(y, x, j)]:
-                costs[(y, x, j)] = costs[(y, x, i)] + 1000
-                next_search.add((y, x, j))
-
-            j = (i - 1) if i else 3
-            if (y, x, j) not in costs or \
-                    costs[(y, x, i)] + 1000 < costs[(y, x, j)]:
-                costs[(y, x, j)] = costs[(y, x, i)] + 1000
-                next_search.add((y, x, j))
+            left, right = (i + 1) % 4, i - 1 if i else 3
+            for turn in left, right:
+                if (y, x, turn) not in costs or \
+                        costs[(y, x, i)] + 1000 < costs[(y, x, turn)]:
+                    costs[(y, x, turn)] = costs[(y, x, i)] + 1000
+                    next_search.add((y, x, turn))
 
             yi, xi = increments[i]
             if (y + yi, x + xi, i) not in costs or \
@@ -399,10 +394,9 @@ def day_16_maze_costs(maze: List[str]) -> Tuple:
 def day_16b_count_best_seats(ending_loc: Tuple, costs: Dict,
                              min_: int) -> int:
     increments = ((0, 1), (1, 0), (0, -1), (-1, 0))
-    best_seats, to_search = {ending_loc}, set()
-    for i in range(4):
-        if costs.get((*ending_loc, i)) == min_:
-            to_search.add((*ending_loc, i, min_))
+    best_seats = {ending_loc}
+    to_search = {(*ending_loc, i, min_) for i in range(4) if
+                 costs.get((*ending_loc, i)) == min_}
 
     while to_search:
         next_search = set()
@@ -414,11 +408,11 @@ def day_16b_count_best_seats(ending_loc: Tuple, costs: Dict,
                 min_ = costs[(y - yi, x - xi, i)]
                 next_search.add((y - yi, x - xi, i, min_))
 
-            j, k = (i + 1) % 4, i - 1 if i else 3
-            for inc in j, k:
-                if (y, x, inc) in costs and \
-                        costs[(y, x, inc)] <= min(min_, costs[(y, x, i)]):
-                    min_, mins = costs[(y, x, inc)], {(y, x, inc)}
+            left, right = (i + 1) % 4, i - 1 if i else 3
+            for turn in left, right:
+                if (y, x, turn) in costs and \
+                        costs[(y, x, turn)] <= min(min_, costs[(y, x, i)]):
+                    min_, mins = costs[(y, x, turn)], {(y, x, turn)}
             next_search |= {(y, x, i, min_) for y, x, i in mins}
 
         best_seats |= {(y, x) for y, x, *_ in next_search}
