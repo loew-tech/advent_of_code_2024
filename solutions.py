@@ -3,7 +3,8 @@ from collections import Counter, defaultdict
 import inspect
 import sys
 
-from classes import PatrolGuard, LinearSystem, WarehouseRobot, WarehouseRobotB
+from classes import (PatrolGuard, LinearSystem, WarehouseRobot,
+                     WarehouseRobotB, Computer)
 from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
                    day_8_count_antinodes, day_9_compress_map,
@@ -148,6 +149,17 @@ def day_16(part='A') -> int:
     if part.upper() == 'A':
         return min_
     return day_16b_count_best_seats(ending_loc, costs, min_)
+
+
+def day_17(part='A') -> str:
+    registers, program = read_input(17, delim='\n\n')
+    a, b, c = [int(i) for i in re.findall(r'\d+', registers)]
+    program = [int(i) for i in re.findall(r'\d+', program)]
+    computer = Computer(a, b, c)
+    output = computer.execute(program)
+    if part.upper() == 'A':
+        return ','.join(str(i) for i in output)
+    return NotImplemented
 
 
 if __name__ == '__main__':

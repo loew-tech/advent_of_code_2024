@@ -202,3 +202,38 @@ class WarehouseRobotB:
 
     def calc_gps_sum(self) -> int:
         return sum(y * 100 + x for y, x, _ in self._doubles)
+
+
+class Computer:
+
+    def __init__(self, ar, br, cr: int):
+
+        self._regs = [ar, br, cr]
+        a, b, c = 0, 1, 2
+        self._i = 0
+        self._get_operand = lambda x: {4: self._regs[a], 5: self._regs[b],
+                                       6: self._regs[c]}.get(x, x)
+        self._ops = {
+            0: lambda x: (a, self._regs[a] // 2**self._get_operand(x)),
+            1: lambda x: (b, self._regs[b] ^ x),
+            2: lambda x: (b, self._get_operand(x) % 8),
+            3: lambda x: (None, -1 if not self._regs[a] else x),
+            4: lambda _: (b, self._regs[b] ^ self._regs[c]),
+            5: lambda x: (False, self._get_operand(x) % 8),
+            6: lambda x: (b, self._regs[a] // 2**self._get_operand(x)),
+            7: lambda x: (c, self._regs[a] // 2**self._get_operand(x)),
+        }
+
+    def execute(self, program: List[int]) -> List[int]:
+        output = []
+        while self._i < len(program):
+            reg, val = self._ops[program[self._i]](program[self._i + 1])
+            if reg in {0, 1, 2} and reg is not False:
+                self._regs[reg] = val
+            elif reg is not None:
+                output.append(val)
+            elif val >= 0:
+                self._i = val
+                continue
+            self._i += 2
+        return output
