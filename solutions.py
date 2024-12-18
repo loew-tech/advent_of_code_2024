@@ -1,5 +1,4 @@
 import re
-import time
 from collections import Counter, defaultdict
 import inspect
 import sys
@@ -12,7 +11,7 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_9b_compress_map, day_10_sum_scores, day_11_blink_stones,
                    day_12_calc_fence_cost, day_14_calc_quadrant_prod,
                    day_14_find_tree, day_16_maze_costs,
-                   day_16b_count_best_seats, program_duplicates)
+                   day_16b_count_best_seats)
 
 
 def day_1(part='A') -> int:
