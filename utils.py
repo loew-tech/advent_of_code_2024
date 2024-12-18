@@ -440,14 +440,3 @@ def day_19_falling_memory(corrupted: Set[Tuple[int, int]]) -> int:
                     next_search.add((y+yi, x+xi))
         to_search = next_search - corrupted
     return -1
-
-
-def print_map(corrupted, visited, end):
-    for y in range(end):
-        str_ = ''
-        for x in range(end):
-            if (y, x) in visited:
-                str_ += 'O'
-                continue
-            str_ += '.' if (y, x) not in corrupted else '#'
-        print(str_)
