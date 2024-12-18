@@ -11,7 +11,7 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_9b_compress_map, day_10_sum_scores, day_11_blink_stones,
                    day_12_calc_fence_cost, day_14_calc_quadrant_prod,
                    day_14_find_tree, day_16_maze_costs,
-                   day_16b_count_best_seats)
+                   day_16b_count_best_seats, day_19_falling_memory)
 
 
 def day_1(part='A') -> int:
@@ -164,7 +164,7 @@ def day_17(part='A') -> int | str:
     # https://www.reddit.com/r/adventofcode/comments/1hg38ah/2024_day_17_solutions/?rdt=37490
     def search(a_new, i: int) -> int:
         for j in range(8):
-            new = j << 3 * i
+            new = j * (8**i)
             if not a_new + new:
                 continue
             computer.reset(a_new + new, 0, 0)
@@ -179,6 +179,18 @@ def day_17(part='A') -> int | str:
     return search(0, 15)
 
 
+def day_18(part='A') -> int:
+    data = read_input(18)
+    if part.upper() == 'A':
+        corrupted = set()
+        for row in data[:1024]:
+            x, y = row.split(',')
+            corrupted.add((int(y), int(x)))
+
+        return day_19_falling_memory(corrupted)
+    return NotImplemented
+
+
 if __name__ == '__main__':
     args = sys.argv[1:] if sys.argv[1:] else range(1, 26)
     args = (f'day_{i}' for i in args)
@@ -190,4 +202,4 @@ if __name__ == '__main__':
             print(f'{day}()= NotImplemented')
             continue
         print(f'{day}()= {funcs[day]()}')
-        print(f'{day}(part="B")= {funcs[day](part="B")}')
+        # print(f'{day}(part="B")= {funcs[day](part="B")}')
