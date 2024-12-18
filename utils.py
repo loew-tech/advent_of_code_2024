@@ -430,13 +430,12 @@ def day_19_falling_memory(corrupted: Set[Tuple[int, int]]) -> int:
     while to_search and (count := count + 1):
         next_search = set()
         for y, x in to_search:
-            if (y, x) in visited:
-                continue
             visited.add((y, x))
             for yi, xi in CARDINAL_DIRECTIONS:
-                if inbounds_(y+yi, x+xi) and (y+yi, x+xi) not in corrupted:
+                if inbounds_(y+yi, x+xi) and (y+yi, x+xi) not in corrupted\
+                        and (y+yi, x+xi) not in visited:
                     if (y+yi, x+xi) == end:
                         return count
                     next_search.add((y+yi, x+xi))
-        to_search = next_search - corrupted
+        to_search = next_search
     return -1
