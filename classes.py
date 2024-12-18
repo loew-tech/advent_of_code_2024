@@ -217,7 +217,7 @@ class Computer:
             0: lambda x: (a, self._regs[a] // 2**self._get_operand(x)),
             1: lambda x: (b, self._regs[b] ^ x),
             2: lambda x: (b, self._get_operand(x) % 8),
-            3: lambda x: (None, -1 if not self._regs[a] else x),
+            3: lambda x: (None, x if self._regs[a] else -1),
             4: lambda _: (b, self._regs[b] ^ self._regs[c]),
             5: lambda x: (False, self._get_operand(x) % 8),
             6: lambda x: (b, self._regs[a] // 2**self._get_operand(x)),
@@ -237,3 +237,6 @@ class Computer:
                 continue
             self._i += 2
         return output
+
+    def reset(self, a, b, c: int) -> None:
+        self._regs, self._i = [a, b, c], 0

@@ -1,4 +1,5 @@
 import re
+import time
 from collections import Counter, defaultdict
 import inspect
 import sys
@@ -11,7 +12,7 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_9b_compress_map, day_10_sum_scores, day_11_blink_stones,
                    day_12_calc_fence_cost, day_14_calc_quadrant_prod,
                    day_14_find_tree, day_16_maze_costs,
-                   day_16b_count_best_seats)
+                   day_16b_count_best_seats, program_duplicates)
 
 
 def day_1(part='A') -> int:
@@ -151,7 +152,7 @@ def day_16(part='A') -> int:
     return day_16b_count_best_seats(ending_loc, costs, min_)
 
 
-def day_17(part='A') -> str:
+def day_17(part='A') -> int | str:
     registers, program = read_input(17, delim='\n\n')
     a, b, c = [int(i) for i in re.findall(r'\d+', registers)]
     program = [int(i) for i in re.findall(r'\d+', program)]
@@ -159,7 +160,24 @@ def day_17(part='A') -> str:
     output = computer.execute(program)
     if part.upper() == 'A':
         return ','.join(str(i) for i in output)
-    return NotImplemented
+
+    # credit to vanZuider for their explanation:
+    # https://www.reddit.com/r/adventofcode/comments/1hg38ah/2024_day_17_solutions/?rdt=37490
+    def search(a_new, i: int) -> int:
+        for j in range(8):
+            new = j << 3 * i
+            if not a_new + new:
+                continue
+            computer.reset(a_new + new, 0, 0)
+            result = computer.execute(program)
+            if result[i] == program[i]:
+                if not i:
+                    return new
+                if (lower := search(a_new + new, i - 1)) >= 0:
+                    return new + lower
+        return -1
+
+    return search(0, 15)
 
 
 if __name__ == '__main__':

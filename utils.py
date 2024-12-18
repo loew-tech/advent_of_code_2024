@@ -17,7 +17,7 @@ ADVENT_URI = 'https://adventofcode.com/'
 def read_input(day: int | str, delim='\n', year=None) -> List[str] | str:
     year = year if year is not None else datetime.now().year
     with open('.env') as env_:
-        session_id = env_.read().strip()
+        session_id = env_.read().strip().split('\n')[0]
     response = requests.get(f'{ADVENT_URI}{year}/day/{day}/input',
                             cookies={'session': session_id})
     if response.status_code == HTTPStatus.OK:
@@ -419,3 +419,28 @@ def day_16b_count_best_seats(ending_loc: Tuple, costs: Dict,
         to_search = next_search
 
     return len(best_seats)
+
+
+def program_duplicates(a_: int, expected: List[int], failed_states=set()) -> \
+        bool:
+    states = set()
+    a, b, c, i = a_,  0, 0, 0
+    while i < len(expected) and a:
+        if (a, b, c, i) in failed_states or (a, b, c, i) in states:
+            failed_states &= states
+            return False
+        states.add((a, b, c, i))
+        b = a % 8
+        b ^= 3
+        c = a // 2**b
+        b ^= c ^ 3
+        a //= 2**3
+        if not b % 8 == expected[i]:
+            states.add((a, b, c, i))
+            failed_states &= states
+            return False
+
+    if a or not i == len(expected):
+        failed_states &= states
+        return False
+    return True
