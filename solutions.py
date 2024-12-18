@@ -138,7 +138,7 @@ def day_15(part='A') -> int:
     map_, moves = read_input(15, delim='\n\n')
     map_ = map_.split('\n')
     moves = moves.replace('\n', '')
-    robot = WarehouseRobot(map_, moves) if part.upper() == 'A' else\
+    robot = WarehouseRobot(map_, moves) if part.upper() == 'A' else \
         WarehouseRobotB(map_, moves)
     robot.move()
     return robot.calc_gps_sum()
@@ -164,7 +164,7 @@ def day_17(part='A') -> int | str:
     # https://www.reddit.com/r/adventofcode/comments/1hg38ah/2024_day_17_solutions/?rdt=37490
     def search(a_new, i: int) -> int:
         for j in range(8):
-            new = j * (8**i)
+            new = j * (8 ** i)
             if not a_new + new:
                 continue
             computer.reset(a_new + new, 0, 0)
@@ -179,16 +179,36 @@ def day_17(part='A') -> int | str:
     return search(0, 15)
 
 
-def day_18(part='A') -> int:
+def day_18(part='A') -> int | str:
     data = read_input(18)
-    if part.upper() == 'A':
-        corrupted = set()
-        for row in data[:1024]:
-            x, y = row.split(',')
-            corrupted.add((int(y), int(x)))
+    corrupted = set()
 
+    def modify_corrupted(i, j: int, method: str) -> None:
+        for row in data[i:j]:
+            x, y = row.split(',')
+            if method == 'add':
+                corrupted.add((int(y), int(x)))
+            else:
+                corrupted.remove((int(y), int(x)))
+
+    modify_corrupted(0, 1025, 'add')
+    if part.upper() == 'A':
         return day_19_falling_memory(corrupted)
-    return NotImplemented
+
+    start, stop = 1024, len(data) - 1
+    mid = (start + stop) // 2
+    modify_corrupted(start, mid, 'add')
+    while start < mid < stop:
+        if day_19_falling_memory(corrupted) > -1:
+            start = mid
+            mid = (start + stop) // 2
+            modify_corrupted(start, mid, 'add')
+        else:
+            stop = mid
+            mid = (start + stop) // 2
+            modify_corrupted(mid, stop, 'remove')
+
+    return data[start]
 
 
 if __name__ == '__main__':
@@ -202,4 +222,4 @@ if __name__ == '__main__':
             print(f'{day}()= NotImplemented')
             continue
         print(f'{day}()= {funcs[day]()}')
-        # print(f'{day}(part="B")= {funcs[day](part="B")}')
+        print(f'{day}(part="B")= {funcs[day](part="B")}')
