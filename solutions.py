@@ -11,7 +11,8 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_9b_compress_map, day_10_sum_scores, day_11_blink_stones,
                    day_12_calc_fence_cost, day_14_calc_quadrant_prod,
                    day_14_find_tree, day_16_maze_costs,
-                   day_16b_count_best_seats, day_19_falling_memory)
+                   day_16b_count_best_seats, day_19_falling_memory,
+                   day_19_count_patterns)
 
 
 def day_1(part='A') -> int:
@@ -209,6 +210,19 @@ def day_18(part='A') -> int | str:
             modify_corrupted(mid, stop, 'remove')
 
     return data[start]
+
+
+def day_19(part='A'):
+    ts, patterns = read_input(19, delim='\n\n')
+    towels = defaultdict(list)
+    for towel in ts.split(','):
+        towel = towel.strip()
+        towels[towel[0]].append(towel)
+    patterns = patterns.split('\n')
+
+    if part.upper() == 'A':
+        return day_19_count_patterns(towels, patterns)
+    return NotImplemented
 
 
 if __name__ == '__main__':

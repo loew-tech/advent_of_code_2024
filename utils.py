@@ -439,3 +439,17 @@ def day_19_falling_memory(corrupted: Set[Tuple[int, int]]) -> int:
                     next_search.add((y+yi, x+xi))
         to_search = next_search
     return -1
+
+
+def day_19_count_patterns(towels: defaultdict, patterns: List[str]) -> int:
+    @cache
+    def check(pattern) -> bool:
+        if not pattern:
+            return True
+        for towel in towels[pattern[0]]:
+            if pattern.startswith(towel):
+                if check(pattern[len(towel):]):
+                    return True
+        return False
+
+    return sum(check(p) for p in patterns)
