@@ -441,15 +441,16 @@ def day_19_falling_memory(corrupted: Set[Tuple[int, int]]) -> int:
     return -1
 
 
-def day_19_count_patterns(towels: defaultdict, patterns: List[str]) -> int:
-    @cache
-    def check(pattern) -> bool:
-        if not pattern:
-            return True
-        for towel in towels[pattern[0]]:
-            if pattern.startswith(towel):
-                if check(pattern[len(towel):]):
-                    return True
-        return False
+def day_19_count_patterns(towels: defaultdict,
+                          patterns: List[str],
+                          part='A') -> int:
 
-    return sum(check(p) for p in patterns)
+    @cache
+    def check(pattern) -> int:
+        if not pattern:
+            return 1
+        return sum(check(pattern[len(towel):]) for towel in
+                   towels[pattern[0]] if pattern.startswith(towel))
+
+    return sum(bool(check(p)) if part.upper() == 'A' else
+               check(p) for p in patterns)

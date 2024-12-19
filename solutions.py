@@ -219,10 +219,7 @@ def day_19(part='A'):
         towel = towel.strip()
         towels[towel[0]].append(towel)
     patterns = patterns.split('\n')
-
-    if part.upper() == 'A':
-        return day_19_count_patterns(towels, patterns)
-    return NotImplemented
+    return day_19_count_patterns(towels, patterns, part)
 
 
 if __name__ == '__main__':
