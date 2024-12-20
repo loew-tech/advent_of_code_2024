@@ -32,6 +32,18 @@ def inbounds(y, x: int, grid: List[List[any] | str]) -> bool:
     return 0 <= y < len(grid) and 0 <= x < len(grid[y])
 
 
+def get_grid_stop_start(grid: [List[str | List[str]]]) ->\
+        Tuple[Tuple[int, int], Tuple[int, int]]:
+    start_y, start_x, end_y, end_x = None, None, None, None
+    for y_, row in enumerate(grid):
+        for x_, v in enumerate(row):
+            if v == 'S':
+                start_y, start_x = y_, x_
+            elif v == 'E':
+                end_y, end_x = y_, x_
+    return (start_y, start_x), (end_y, end_x)
+
+
 def day_2_helper(part='A') -> int:
     def _is_valid_report(report_: List[str]) -> int:
         diffs = {int(v) - int(report_[i]) for i, v in enumerate(report_[1:])}
@@ -353,16 +365,10 @@ def day_14_find_tree(data: List[List[int]]) -> int:
 
 
 def day_16_maze_costs(maze: List[str]) -> Tuple:
-    start_y, start_x, end_y, end_x = None, None, None, None
-    for y_, row in enumerate(maze):
-        for x_, v in enumerate(row):
-            if v == 'S':
-                start_y, start_x = y_, x_
-            elif v == 'E':
-                end_y, end_x = y_, x_
-
+    (start_y, start_x), (end_y, end_x) = get_grid_stop_start(maze)
     costs = {(start_y, start_x, 0): 0}
     increments = ((0, 1), (1, 0), (0, -1), (-1, 0))
+
     to_search, min_ = {(start_y, start_x, 0)}, float('inf')
     while to_search:
         next_search = set()
