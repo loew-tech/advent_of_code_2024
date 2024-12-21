@@ -1,6 +1,7 @@
+from collections import defaultdict
 import math
 import re
-from typing import List
+from typing import List, Tuple
 
 from constants import CARDINAL_DIRECTIONS
 
@@ -214,14 +215,14 @@ class Computer:
         self._get_operand = lambda x: {4: self._regs[a], 5: self._regs[b],
                                        6: self._regs[c]}.get(x, x)
         self._ops = {
-            0: lambda x: (a, self._regs[a] // 2**self._get_operand(x)),
+            0: lambda x: (a, self._regs[a] // 2 ** self._get_operand(x)),
             1: lambda x: (b, self._regs[b] ^ x),
             2: lambda x: (b, self._get_operand(x) % 8),
             3: lambda x: (None, x if self._regs[a] else -1),
             4: lambda _: (b, self._regs[b] ^ self._regs[c]),
             5: lambda x: (False, self._get_operand(x) % 8),
-            6: lambda x: (b, self._regs[a] // 2**self._get_operand(x)),
-            7: lambda x: (c, self._regs[a] // 2**self._get_operand(x)),
+            6: lambda x: (b, self._regs[a] // 2 ** self._get_operand(x)),
+            7: lambda x: (c, self._regs[a] // 2 ** self._get_operand(x)),
         }
 
     def execute(self, program: List[int]) -> List[int]:
@@ -240,3 +241,105 @@ class Computer:
 
     def reset(self, a, b, c: int) -> None:
         self._regs, self._i = [a, b, c], 0
+
+
+class ShortcutFinder:
+
+    def __init__(self, grid: List[str], start, stop: Tuple[int, int]):
+        self._maze = grid
+        self._inbounds = lambda y, x: 0 <= y < len(grid) and \
+                                      0 <= x < len(grid[y])
+        self._start_y, self._start_x = start
+        self._end_y, self._end_x = stop
+
+        self._costs = {(self._end_y, self._end_x): 0}
+        self._build_init_costs()
+
+        self._short_cuts = {}
+        self._find_short_cuts()
+
+        self._spc = defaultdict(int)
+
+    def _build_init_costs(self) -> None:
+        to_search = [(self._end_y, self._end_x)]
+        while to_search:
+            next_search = []
+            for y, x in to_search:
+                for yi, xi in CARDINAL_DIRECTIONS:
+                    if self._inbounds(y + yi, x + xi) and\
+                            (y + yi, x + xi) not in self._costs and not \
+                            self._maze[y+yi][x+xi] == '#':
+                        self._costs[(y + yi, x + xi)] = self._costs[(y, x)] + 1
+                        next_search.append((y + yi, x + xi))
+            to_search = next_search
+
+    def _find_short_cuts(self):
+        to_search = [(y, x) for y, row in enumerate(self._maze) for
+                     x, v in enumerate(row) if v == '#']
+
+        for y, x in to_search:
+            neighbors = [(y + yi, x + xi) for yi, xi in CARDINAL_DIRECTIONS if
+                         (y + yi, x + xi) in self._costs]
+            if 1 < len(neighbors):
+                cost = min(self._costs[n] for n in neighbors)
+                self._short_cuts[(y, x)] = cost + 1
+
+    def _find_shortest_path(self) -> int:
+        to_search = [(self._start_y, self._start_x)]
+
+        count, observed = 0, set()
+        while to_search and (count := count + 1):
+            next_search = set()
+            for y, x in to_search:
+                observed.add((y, x))
+                for yi, xi in CARDINAL_DIRECTIONS:
+                    if self._inbounds(y + yi, x + xi) and \
+                            (y + yi, x + xi) not in observed \
+                            and not self._maze[y+yi][x+xi] == '#':
+                        if (y + yi, x + xi) == (self._end_y, self._end_x):
+                            return count
+                        next_search.add((y + yi, x + xi))
+            to_search = next_search
+        return -1
+
+    def count_short_cuts(self, threshold=100):
+
+        def is_shortcut(y_, x_, count_: int) -> bool:
+            return (y_, x_) in self._short_cuts and \
+                   self._short_cuts[(y_, x_)] + count_ <= min_cost - threshold
+
+        to_search = [(self._start_y, self._start_x)]
+        min_cost = self._find_shortest_path()
+        count, end = 0, (self._end_y, self._end_x)
+        observed, num_cuts = set(), 0
+        while to_search and (count := count + 1):
+            next_search = set()
+            for y, x in to_search:
+                observed.add((y, x))
+                for yi, xi in CARDINAL_DIRECTIONS:
+                    if self._inbounds((y + yi), (x + xi)) and \
+                            (y + yi, x + xi) not in observed:
+                        if is_shortcut(y+yi, x+xi, count):
+                            num_cuts += 1
+                            continue
+                        is_end = (y+yi, x+xi) == end
+                        if is_end or self._maze[y+yi][x+xi] == '#':
+                            continue
+                        next_search.add((y+yi, x+xi))
+
+            to_search = next_search - observed
+        return num_cuts
+
+    # @TODO: remove debug function
+    def print_grid(self, observed, shortcuts):
+        for y, row in enumerate(self._maze):
+            str_ = ''
+            for x, v in enumerate(row):
+                if (y, x) in observed:
+                    str_ += 'O'
+                elif (y, x) in shortcuts:
+                    str_ += '%'
+                else:
+                    str_ += v
+            print(str_)
+        print()

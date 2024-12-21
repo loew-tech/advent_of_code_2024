@@ -32,7 +32,7 @@ def inbounds(y, x: int, grid: List[List[any] | str]) -> bool:
     return 0 <= y < len(grid) and 0 <= x < len(grid[y])
 
 
-def get_grid_stop_start(grid: [List[str | List[str]]]) ->\
+def get_grid_stop_start(grid: [List[str | List[str]]]) -> \
         Tuple[Tuple[int, int], Tuple[int, int]]:
     start_y, start_x, end_y, end_x = None, None, None, None
     for y_, row in enumerate(grid):
@@ -46,7 +46,7 @@ def get_grid_stop_start(grid: [List[str | List[str]]]) ->\
 
 def day_2_helper(part='A') -> int:
     def _is_valid_report(report_: List[str]) -> int:
-        diffs = {int(v) - int(report_[i]) for i, v in enumerate(report_[1:])}
+        diffs = {int(v) - int(report_[i_]) for i_, v in enumerate(report_[1:])}
         return diffs <= {1, 2, 3} or diffs <= {-1, -2, -3}
 
     count = 0
@@ -90,7 +90,7 @@ def day_4_word_search(data: List[str], part: str) -> int:
         if not (is_inbounds(y_ - 1, x_ - 1) and is_inbounds(y + 1, x_ + 1) and
                 {data[y_ - 1][x_ - 1], data[y_ + 1][x_ + 1]} == {'S', 'M'}):
             return False
-        return is_inbounds(y_ - 1, x_ + 1) and is_inbounds(y_ + 1, x_ - 1) and \
+        return is_inbounds(y_ - 1, x_ + 1) and is_inbounds(y_ + 1, x_ - 1) and\
                {data[y_ - 1][x_ + 1], data[y_ + 1][x_ - 1]} == {'S', 'M'}
 
     for y, row in enumerate(data):
@@ -438,11 +438,12 @@ def day_19_falling_memory(corrupted: Set[Tuple[int, int]]) -> int:
         for y, x in to_search:
             visited.add((y, x))
             for yi, xi in CARDINAL_DIRECTIONS:
-                if inbounds_(y+yi, x+xi) and (y+yi, x+xi) not in corrupted\
-                        and (y+yi, x+xi) not in visited:
-                    if (y+yi, x+xi) == end:
+                if inbounds_(y + yi, x + xi) and (
+                        y + yi, x + xi) not in corrupted \
+                        and (y + yi, x + xi) not in visited:
+                    if (y + yi, x + xi) == end:
                         return count
-                    next_search.add((y+yi, x+xi))
+                    next_search.add((y + yi, x + xi))
         to_search = next_search
     return -1
 
@@ -450,7 +451,6 @@ def day_19_falling_memory(corrupted: Set[Tuple[int, int]]) -> int:
 def day_19_count_patterns(towels: defaultdict,
                           patterns: List[str],
                           part='A') -> int:
-
     @cache
     def check(pattern) -> int:
         if not pattern:

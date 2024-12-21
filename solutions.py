@@ -4,7 +4,7 @@ import inspect
 import sys
 
 from classes import (PatrolGuard, LinearSystem, WarehouseRobot,
-                     WarehouseRobotB, Computer)
+                     WarehouseRobotB, Computer, ShortcutFinder)
 from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_4_word_search, day_5_sum_mid_page, day_7_check_eq,
                    day_8_count_antinodes, day_9_compress_map,
@@ -12,7 +12,7 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_12_calc_fence_cost, day_14_calc_quadrant_prod,
                    day_14_find_tree, day_16_maze_costs,
                    day_16b_count_best_seats, day_19_falling_memory,
-                   day_19_count_patterns)
+                   day_19_count_patterns, get_grid_stop_start)
 
 
 def day_1(part='A') -> int:
@@ -220,6 +220,20 @@ def day_19(part='A'):
         towels[towel[0]].append(towel)
     patterns = patterns.split('\n')
     return day_19_count_patterns(towels, patterns, part)
+
+
+def day_20(part='A') -> int:
+    data = read_input(20)
+    if part.upper() != 'A':
+        return NotImplemented
+    # with open('in.txt') as in_:
+    #     data = in_.read().split('\n')
+    start, stop = get_grid_stop_start(data)
+    print(f'{start=} {stop=}')
+    print('here')
+    finder = ShortcutFinder(data, start, stop)
+    # @TODO: 193 is too low
+    return finder.count_short_cuts()
 
 
 if __name__ == '__main__':
