@@ -226,12 +226,12 @@ def day_20(part='A') -> int:
     data = read_input(20)
     # if part.upper() != 'A':
     #     return NotImplemented
-    with open('in.txt') as in_:
-        data = in_.read().split('\n')
+    # with open('in.txt') as in_:
+    #     data = in_.read().split('\n')
     start, stop = get_grid_stop_start(data)
+    print(f'{start=} {stop=}')
     finder = ShortcutFinder(data, start, stop)
-    # @TODO: 5311 is too low for part B
-    #        1027164
+
     return finder.count_short_cuts(threshold=50) if part.upper() == 'A' else \
         finder.count_shortcuts(threshold=50)
 
@@ -246,5 +246,5 @@ if __name__ == '__main__':
         if day not in funcs:
             print(f'{day}()= NotImplemented')
             continue
-        print(f'{day}()= {funcs[day]()}')
+        # print(f'{day}()= {funcs[day]()}')
         print(f'{day}(part="B")= {funcs[day](part="B")}')
