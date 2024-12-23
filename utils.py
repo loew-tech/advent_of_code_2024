@@ -495,7 +495,8 @@ def day_22_gen_secrets(data: List[int]):
     return sum(data), max(sequences.values())
 
 
-def day_23_count_cycles(data: List[List[str]]) -> int:
+def day_23_get_graph_and_possibilities(data: List[List[str]]) \
+        -> Tuple[defaultdict, Set[str]]:
     graph = defaultdict(set)
     possibilities = set()
     for cpu1, cpu2 in data:
@@ -506,6 +507,10 @@ def day_23_count_cycles(data: List[List[str]]) -> int:
         if cpu2[0] == 't':
             possibilities.add(cpu2)
 
+    return graph, possibilities
+
+
+def day_23_count_cycles(graph: defaultdict, possibilities: Set[str]) -> int:
     cycles = set()
     while possibilities:
         start = possibilities.pop()
@@ -522,3 +527,19 @@ def day_23_count_cycles(data: List[List[str]]) -> int:
             to_search = next_search
 
     return len(cycles)
+
+
+def get_max_component_size(graph: defaultdict) -> str:
+    max_, comp = 0, {}
+    for node in graph:
+        start = graph[node] | {node}
+        for n in graph[node]:
+            if n not in start:
+                continue
+            start -= (start - (graph[n] | {n}))
+
+        if max_ < len(start):
+            max_ = len(start)
+            comp = start
+
+    return ','.join(sorted(comp))
