@@ -232,8 +232,13 @@ def day_20(part='A') -> int:
     print(f'{start=} {stop=}')
     finder = ShortcutFinder(data, start, stop)
 
-    return finder.count_short_cuts(threshold=50) if part.upper() == 'A' else \
-        finder.count_shortcuts(threshold=50)
+    # @TODO: 5311 is too low for part B
+    #        1788022
+    #        2185230 is too high
+    #      335617833
+    return finder.count_short_cuts(threshold=100) if part.upper() == 'A' else \
+        finder.discover_shortcuts(threshold=100)
+    # finder.count_shortcuts(depth=20, threshold=100)
 
 
 if __name__ == '__main__':
@@ -246,5 +251,5 @@ if __name__ == '__main__':
         if day not in funcs:
             print(f'{day}()= NotImplemented')
             continue
-        # print(f'{day}()= {funcs[day]()}')
+        print(f'{day}()= {funcs[day]()}')
         print(f'{day}(part="B")= {funcs[day](part="B")}')

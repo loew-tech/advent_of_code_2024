@@ -3,6 +3,8 @@ import math
 import re
 from typing import List, Tuple
 
+from scrapy.utils.decorators import deprecated
+
 from constants import CARDINAL_DIRECTIONS
 
 
@@ -334,6 +336,7 @@ class ShortcutFinder:
             to_search = next_search
         return -1
 
+    # @TODO: rename old function
     def count_short_cuts(self, threshold=100):
 
         def is_shortcut(y_, x_, count_: int) -> bool:
@@ -362,7 +365,7 @@ class ShortcutFinder:
             to_search = next_search - observed
         return num_cuts
 
-    def count_shortcuts(self, threshold=100):
+    def discover_shortcuts(self, threshold=100):
         if not self._shortcuts:
             self._find_shortcuts()
 
@@ -389,13 +392,53 @@ class ShortcutFinder:
                                 dests.add((y+yi, x+xi))
                             # self.print_grid(src, dests)
                             # input('BREAK 2: ')
-                        is_end = (y + yi, x + xi) == end
-                        if is_end or self._maze[y + yi][x + xi] == '#':
+                        if p == end or self._maze[y + yi][x + xi] == '#':
                             continue
                         next_search.add((y + yi, x + xi))
 
             to_search = next_search - observed
         return num_cuts
+
+    def count_shortcuts(self, depth=2, threshold=100):
+
+        min_cost = self._find_shortest_path()
+
+        def find_shortcuts(y_, x_, steps_: int) -> int:
+            count = 0
+            for yi in range(depth):
+                for xi in range(depth-yi):
+                    cost = steps_ + yi + xi
+                    p = (y_+yi, x_+xi)
+                    if p in self._costs:
+                        count += self._costs[p] + threshold + cost <= min_cost
+                    p = (y_-yi, x_+xi)
+                    if p in self._costs:
+                        count += self._costs[p] + threshold + cost <= min_cost
+                    p = (y_+yi, x_-xi)
+                    if p in self._costs:
+                        count += self._costs[p] + threshold + cost <= min_cost
+                    p = (y_-yi, x_-xi)
+                    if p in self._costs:
+                        count += self._costs[p] + threshold + cost <= min_cost
+            return count
+
+        if not self._costs:
+            self._build_init_costs()
+        end = (self._end_y, self._end_x)
+        to_search = {(self._start_y, self._start_x)}
+        ret, steps = 0, 0
+        while to_search and (steps := steps + 1) < min_cost:
+            print(f'{steps=} {min_cost=}')
+            next_search = set()
+            for y, x in to_search:
+                ret += find_shortcuts(y, x, steps)
+                for dy, dx in CARDINAL_DIRECTIONS:
+                    if self._maze[y+dy][x+dx] == '#':
+                        continue
+                    next_search.add((y+dy, x+dx))
+            to_search = next_search
+
+        return ret
 
     # @TODO: remove debug function
     def print_grid(self, src, dests):
