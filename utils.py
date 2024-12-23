@@ -463,11 +463,6 @@ def day_19_count_patterns(towels: defaultdict,
 
 
 def day_22_gen_secrets(data: List[int]):
-    def mix(secret_, num: int) -> int:
-        return secret_ ^ num
-
-    def prune(num: int) -> int:
-        return num % 16777216
 
     def transform(secret_: int) -> int:
         temp = secret_ * 64
@@ -481,8 +476,20 @@ def day_22_gen_secrets(data: List[int]):
         secret_ %= 16777216
         return secret_
 
-    for _ in range(2_000):
-        for i, secret in enumerate(data):
-            data[i] = transform(secret)
+    sequences = defaultdict(int)
+    for j in range(len(data)):
+        str_, used = '', set()
+        for i in range(2_000):
+            last = data[j] % 10
+            data[j] = transform(data[j])
+            price = data[j] % 10
+            delta = price - last
+            if i < 3:
+                str_ = f'{str_},{delta}'
+            else:
+                str_ = ','.join(str_.split(',')[1:]+[f'{delta}'])
 
-    return sum(data)
+            if i >= 3 and str_ not in used:
+                sequences[str_] += price
+                used.add(str_)
+    return sum(data), max(sequences.values())

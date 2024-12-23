@@ -244,10 +244,8 @@ def day_20(part='A') -> int:
 
 def day_22(part='A') -> int:
     data = [int(i) for i in read_input(22)]
-    if part.upper() == 'A':
-        return day_22_gen_secrets(data)
-    return NotImplemented
-
+    sum_, max_bananas = day_22_gen_secrets(data)
+    return sum_ if part.upper() == 'A' else max_bananas
 
 
 if __name__ == '__main__':
@@ -261,4 +259,5 @@ if __name__ == '__main__':
             print(f'{day}()= NotImplemented')
             continue
         print(f'{day}()= {funcs[day]()}')
+        input('BREAK ZERO: ')
         print(f'{day}(part="B")= {funcs[day](part="B")}')
