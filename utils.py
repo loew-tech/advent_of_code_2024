@@ -460,3 +460,29 @@ def day_19_count_patterns(towels: defaultdict,
 
     return sum(bool(check(p)) if part.upper() == 'A' else
                check(p) for p in patterns)
+
+
+def day_22_gen_secrets(data: List[int]):
+    def mix(secret_, num: int) -> int:
+        return secret_ ^ num
+
+    def prune(num: int) -> int:
+        return num % 16777216
+
+    def transform(secret_: int) -> int:
+        temp = secret_ * 64
+        secret_ ^= temp
+        secret_ %= 16777216
+        temp = secret_ // 32
+        secret_ ^= temp
+        secret_ %= 16777216
+        temp = secret_ * 2048
+        secret_ ^= temp
+        secret_ %= 16777216
+        return secret_
+
+    for _ in range(2_000):
+        for i, secret in enumerate(data):
+            data[i] = transform(secret)
+
+    return sum(data)

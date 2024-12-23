@@ -262,7 +262,7 @@ class ShortcutFinder:
 
         self._shortcuts = defaultdict(dict)
         self._find_shortcuts()
-        print(f'{self._shortcuts[(3, 2)]=}')
+        # print(f'{self._shortcuts[(3, 2)]=}')
         # self.print_grid(self._shortcuts, {})
         # input('BREAK: ')
 
@@ -375,8 +375,8 @@ class ShortcutFinder:
         observed, num_cuts = set(), 0
         src, dests = set(), set()
         while to_search and (count := count + 1):
-            if not count % 1000:
-                print(count)
+            # if not count % 1000:
+            #     print(count)
             next_search = set()
             # self.print_grid(scs, dests)
             for y, x in to_search:

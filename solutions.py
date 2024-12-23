@@ -12,7 +12,8 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_12_calc_fence_cost, day_14_calc_quadrant_prod,
                    day_14_find_tree, day_16_maze_costs,
                    day_16b_count_best_seats, day_19_falling_memory,
-                   day_19_count_patterns, get_grid_stop_start)
+                   day_19_count_patterns, get_grid_stop_start,
+                   day_22_gen_secrets)
 
 
 def day_1(part='A') -> int:
@@ -229,7 +230,7 @@ def day_20(part='A') -> int:
     # with open('in.txt') as in_:
     #     data = in_.read().split('\n')
     start, stop = get_grid_stop_start(data)
-    print(f'{start=} {stop=}')
+    # print(f'{start=} {stop=}')
     finder = ShortcutFinder(data, start, stop)
 
     # @TODO: 5311 is too low for part B
@@ -239,6 +240,14 @@ def day_20(part='A') -> int:
     return finder.count_short_cuts(threshold=100) if part.upper() == 'A' else \
         finder.discover_shortcuts(threshold=100)
     # finder.count_shortcuts(depth=20, threshold=100)
+
+
+def day_22(part='A') -> int:
+    data = [int(i) for i in read_input(22)]
+    if part.upper() == 'A':
+        return day_22_gen_secrets(data)
+    return NotImplemented
+
 
 
 if __name__ == '__main__':
