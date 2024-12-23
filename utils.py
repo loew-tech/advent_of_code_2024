@@ -4,7 +4,7 @@ from functools import cache
 from http import HTTPStatus
 import re
 import requests
-from typing import List, Callable, Tuple, Set, Dict
+from typing import List, Callable, Tuple, Set, Dict, Generator
 
 from sortedcontainers import SortedList
 
@@ -493,3 +493,32 @@ def day_22_gen_secrets(data: List[int]):
                 sequences[str_] += price
                 used.add(str_)
     return sum(data), max(sequences.values())
+
+
+def day_23_count_cycles(data: List[List[str]]) -> int:
+    graph = defaultdict(set)
+    possibilities = set()
+    for cpu1, cpu2 in data:
+        graph[cpu1].add(cpu2)
+        graph[cpu2].add(cpu1)
+        if cpu1[0] == 't':
+            possibilities.add(cpu1)
+        if cpu2[0] == 't':
+            possibilities.add(cpu2)
+
+    cycles = set()
+    while possibilities:
+        start = possibilities.pop()
+        to_search, observed, depth = {(None, start)}, set(), 0
+        while to_search and (depth := depth + 1) <= 3:
+            next_search = set()
+            for last, computer in to_search:
+                observed.add(computer)
+                for c in graph[computer]:
+                    if c == start and not last == start:
+                        cycles.add('-'.join(sorted((start, last, computer))))
+                        continue
+                    next_search.add((computer, c))
+            to_search = next_search
+
+    return len(cycles)

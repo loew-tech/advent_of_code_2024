@@ -13,7 +13,7 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_14_find_tree, day_16_maze_costs,
                    day_16b_count_best_seats, day_19_falling_memory,
                    day_19_count_patterns, get_grid_stop_start,
-                   day_22_gen_secrets)
+                   day_22_gen_secrets, day_23_count_cycles)
 
 
 def day_1(part='A') -> int:
@@ -248,6 +248,13 @@ def day_22(part='A') -> int:
     return sum_ if part.upper() == 'A' else max_bananas
 
 
+def day_23(part='A') -> int:
+    data = [i.split('-') for i in read_input(23)]
+    if part.upper() == 'A':
+        return day_23_count_cycles(data)
+    return NotImplemented
+
+
 if __name__ == '__main__':
     args = sys.argv[1:] if sys.argv[1:] else range(1, 26)
     args = (f'day_{i}' for i in args)
@@ -259,5 +266,4 @@ if __name__ == '__main__':
             print(f'{day}()= NotImplemented')
             continue
         print(f'{day}()= {funcs[day]()}')
-        input('BREAK ZERO: ')
         print(f'{day}(part="B")= {funcs[day](part="B")}')
