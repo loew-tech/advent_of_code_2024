@@ -14,7 +14,8 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_16b_count_best_seats, day_19_falling_memory,
                    day_19_count_patterns, get_grid_stop_start,
                    day_22_gen_secrets, day_23_count_cycles,
-                   day_23_get_graph_and_possibilities, get_max_component_size)
+                   day_23_get_graph_and_possibilities, get_max_network,
+                   day_24_solve_gates)
 
 
 def day_1(part='A') -> int:
@@ -254,7 +255,39 @@ def day_23(part='A') -> int | str:
     graph, possibilities = day_23_get_graph_and_possibilities(data)
     if part.upper() == 'A':
         return day_23_count_cycles(graph, possibilities)
-    return get_max_component_size(graph)
+    return get_max_network(graph)
+
+
+def day_24(part='A'):
+    init_vals, gates_ = read_input(24, delim='\n\n')
+    vals = {}
+    for entry in init_vals.split('\n'):
+        wire, val = entry.split(':')
+        vals[wire] = int(val)
+
+    ops = {
+        'AND': lambda x, y: x and y,
+        'OR': lambda x, y: x or y,
+        'XOR': lambda x, y: x ^ y
+    }
+
+    gates, z_wires = {}, set()
+    for gate in gates_.split('\n'):
+        g, result = gate.split('->')
+        result = result.strip()
+        val1, op, val2 = g.split()
+        gates[result] = (ops[op], val1, val2)
+
+        if result[0] == 'z':
+            z_wires.add(result)
+        if val1[0] == 'z':
+            z_wires.add(val1)
+        if val2[0] == 'z':
+            z_wires.add(val2)
+
+    if part.upper() == 'A':
+        return day_24_solve_gates(z_wires, gates, vals)
+    return NotImplemented
 
 
 if __name__ == '__main__':

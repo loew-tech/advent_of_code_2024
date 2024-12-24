@@ -529,7 +529,7 @@ def day_23_count_cycles(graph: defaultdict, possibilities: Set[str]) -> int:
     return len(cycles)
 
 
-def get_max_component_size(graph: defaultdict) -> str:
+def get_max_network(graph: defaultdict) -> str:
     max_, comp = 0, {}
     for node in graph:
         start = graph[node] | {node}
@@ -543,3 +543,18 @@ def get_max_component_size(graph: defaultdict) -> str:
             comp = start
 
     return ','.join(sorted(comp))
+
+
+def day_24_solve_gates(endz: Set[str], gates, vals: Dict):
+    def solve(val):
+        op, wire1, wire2 = gates[val]
+        if wire1 not in vals:
+            solve(wire1)
+        if wire2 not in vals:
+            solve(wire2)
+        result = op(vals[wire1], vals[wire2])
+        vals[val] = result
+        return result
+
+    bits = [solve(z) for z in sorted(endz, reverse=True)]
+    return int(''.join([str(bit) for bit in bits]), 2)
