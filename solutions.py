@@ -2,6 +2,7 @@ import re
 from collections import Counter, defaultdict
 import inspect
 import sys
+from itertools import permutations
 
 from classes import (PatrolGuard, LinearSystem, WarehouseRobot,
                      WarehouseRobotB, Computer, ShortcutFinder)
@@ -285,9 +286,10 @@ def day_24(part='A'):
         if val2[0] == 'z':
             z_wires.add(val2)
 
+    result, wrong = day_24_solve_gates(z_wires, gates, vals, ops)
     if part.upper() == 'A':
-        return day_24_solve_gates(z_wires, gates, vals)
-    return NotImplemented
+        return result
+    return wrong
 
 
 if __name__ == '__main__':

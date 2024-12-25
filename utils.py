@@ -4,7 +4,7 @@ from functools import cache
 from http import HTTPStatus
 import re
 import requests
-from typing import List, Callable, Tuple, Set, Dict, Generator
+from typing import List, Callable, Tuple, Set, Dict
 
 from sortedcontainers import SortedList
 
@@ -463,7 +463,6 @@ def day_19_count_patterns(towels: defaultdict,
 
 
 def day_22_gen_secrets(data: List[int]):
-
     def transform(secret_: int) -> int:
         temp = secret_ * 64
         secret_ ^= temp
@@ -487,7 +486,7 @@ def day_22_gen_secrets(data: List[int]):
             if i < 3:
                 str_ = f'{str_},{delta}'
             else:
-                str_ = ','.join(str_.split(',')[1:]+[f'{delta}'])
+                str_ = ','.join(str_.split(',')[1:] + [f'{delta}'])
 
             if i >= 3 and str_ not in used:
                 sequences[str_] += price
@@ -545,9 +544,27 @@ def get_max_network(graph: defaultdict) -> str:
     return ','.join(sorted(comp))
 
 
-def day_24_solve_gates(endz: Set[str], gates, vals: Dict):
+def day_24_solve_gates(endz: Set[str], gates, vals: Dict, ops: Dict):
+    wrong = set()
+    highest_z = max(endz)
+    xor, and_, or_ = "XOR", "AND", 'OR'
+
     def solve(val):
         op, wire1, wire2 = gates[val]
+        if val[0] == 'z' and not op == ops[xor] and not val == highest_z:
+            wrong.add(val)
+        if val[0] not in 'xyz' and wire1[0] not in 'xyz' and \
+                wire2[0] not in 'xyz' and op == ops[xor]:
+            wrong.add(val)
+        if op == ops[and_] and 'x00' not in (wire1, wire2):
+            for res, (op_, w1, w2) in gates.items():
+                if val in (w1, w2) and not op_ == ops[or_]:
+                    wrong.add(val)
+        if op == ops[xor]:
+            for res, (op_, w1, w2) in gates.items():
+                if val in (w1, w2) and op_ == ops[or_]:
+                    wrong.add(val)
+
         if wire1 not in vals:
             solve(wire1)
         if wire2 not in vals:
@@ -557,4 +574,4 @@ def day_24_solve_gates(endz: Set[str], gates, vals: Dict):
         return result
 
     bits = [solve(z) for z in sorted(endz, reverse=True)]
-    return int(''.join([str(bit) for bit in bits]), 2)
+    return int(''.join([str(bit) for bit in bits]), 2), ','.join(sorted(wrong))
