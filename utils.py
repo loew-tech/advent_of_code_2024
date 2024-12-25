@@ -575,3 +575,33 @@ def day_24_solve_gates(endz: Set[str], gates, vals: Dict, ops: Dict):
 
     bits = [solve(z) for z in sorted(endz, reverse=True)]
     return int(''.join([str(bit) for bit in bits]), 2), ','.join(sorted(wrong))
+
+
+def day_25_count_matches(schematics: List[List[str]]) -> int:
+    locks, keys, height = [], [], len(schematics[0]) - 2
+    for schematic in schematics:
+        char_ = schematic[0][0]
+        scheme = []
+        for x in range(len(schematic[0])):
+            y = 0
+            while (y := y + 1) < len(schematic) and schematic[y][x] == char_:
+                pass
+            scheme.append(y-1)
+        if char_ == '#':
+            locks.append(scheme)
+        else:
+            keys.append([height - i for i in scheme])
+
+    count = 0
+    for key in keys:
+        for lock in locks:
+            valid = True
+            print(f'{key=} {lock=}')
+            for i, v in enumerate(key):
+                if v + lock[i] > height:
+                    print(f'\tcollision at column {i+1}')
+                    valid = False
+                    break
+            count += valid
+
+    return count

@@ -16,7 +16,7 @@ from utils import (read_input, get_inbounds, day_2_helper, day_3_sum_mult,
                    day_19_count_patterns, get_grid_stop_start,
                    day_22_gen_secrets, day_23_count_cycles,
                    day_23_get_graph_and_possibilities, get_max_network,
-                   day_24_solve_gates)
+                   day_24_solve_gates, day_25_count_matches)
 
 
 def day_1(part='A') -> int:
@@ -290,6 +290,16 @@ def day_24(part='A'):
     if part.upper() == 'A':
         return result
     return wrong
+
+
+def day_25(part='A') -> int:
+    data = read_input(25, delim='\n\n')
+
+    data = [entry.split('\n') for entry in data]
+    if part.upper() == 'A':
+        # @TODO: 3759 is too high
+        return day_25_count_matches(data)
+    return NotImplemented
 
 
 if __name__ == '__main__':
